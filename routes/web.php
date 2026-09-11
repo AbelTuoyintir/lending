@@ -8,6 +8,10 @@ use App\Http\Controllers\InterestCycleController;
 use App\Http\Controllers\CollectionsController;
 use App\Http\Controllers\ReportsController;
 
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
 Route::middleware('auth')->group(function () {
 
     /*
