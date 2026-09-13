@@ -3,101 +3,101 @@
 @section('title', 'Create Loan Product | FinCore')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+
+<div class="max-w-3xl mx-auto space-y-6">
+
     <div>
-        <a href="{{ route('loan-products.index') }}" class="text-slate-400 hover:text-slate-600 text-sm">
-            &larr; Back to Loan Products
+        <a href="{{ route('loan-products.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
+            &larr; Back to loan products
         </a>
-        <h1 class="text-2xl font-bold mt-1">Create Loan Product</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 mt-2">
+            Create Loan Product
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">
+            Define product parameters, default initial interest rate, and borrowing bounds.
+        </p>
     </div>
 
-    @if($errors->any())
-        <div class="p-4 rounded-xl bg-red-50 text-red-800 border border-red-200 text-sm">
-            <ul class="list-disc list-inside space-y-1">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    <form method="POST" action="{{ route('loan-products.store') }}" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+        @csrf
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Product Name *
+                </label>
+                <input type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. Standard Loan"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Product Code *
+                </label>
+                <input type="text" name="code" value="{{ old('code') }}" required placeholder="e.g. LP-STD"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+            </div>
         </div>
-    @endif
 
-    <div class="bg-white border border-slate-200 rounded-2xl p-6">
-        <form action="{{ route('loan-products.store') }}" method="POST" class="space-y-6">
-            @csrf
+        <div>
+            <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                Description
+            </label>
+            <textarea name="description" rows="2" placeholder="Brief description of loan product eligibility..."
+                      class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">{{ old('description') }}</textarea>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Product Name *</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Product Code *</label>
-                    <input type="text" name="code" value="{{ old('code') }}" placeholder="e.g. PERS-001" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Minimum Amount (GHS) *
+                </label>
+                <input type="number" step="0.01" min="0" name="min_amount" value="{{ old('min_amount', 100) }}" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Interest Rate (%) *</label>
-                    <input type="number" step="0.01" name="interest_rate" value="{{ old('interest_rate') }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Interest Type *</label>
-                    <select name="interest_type" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                        <option value="flat" @selected(old('interest_type') === 'flat')>Flat Rate</option>
-                        <option value="reducing_balance" @selected(old('interest_type') === 'reducing_balance')>Reducing Balance</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Repayment Frequency *</label>
-                    <select name="repayment_frequency" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                        <option value="monthly" @selected(old('repayment_frequency') === 'monthly')>Monthly</option>
-                        <option value="weekly" @selected(old('repayment_frequency') === 'weekly')>Weekly</option>
-                        <option value="biweekly" @selected(old('repayment_frequency') === 'biweekly')>Bi-weekly</option>
-                        <option value="daily" @selected(old('repayment_frequency') === 'daily')>Daily</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Maximum Amount (GHS) *
+                </label>
+                <input type="number" step="0.01" min="0" name="max_amount" value="{{ old('max_amount', 50000) }}" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Min Amount (GHS) *</label>
-                    <input type="number" step="0.01" name="min_amount" value="{{ old('min_amount') }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Max Amount (GHS) *</label>
-                    <input type="number" step="0.01" name="max_amount" value="{{ old('max_amount') }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Min Duration (Months) *</label>
-                    <input type="number" name="min_duration" value="{{ old('min_duration', 1) }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Max Duration (Months) *</label>
-                    <input type="number" name="max_duration" value="{{ old('max_duration', 12) }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Default Initial Interest Rate (%) *
+                </label>
+                <div class="relative">
+                    <input type="number" step="0.01" min="0" name="interest_rate" value="{{ old('interest_rate', 30) }}" required
+                           class="w-full pr-10 pl-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+                    <span class="absolute right-3.5 top-2.5 text-sm font-bold text-slate-400">%</span>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Description</label>
-                <textarea name="description" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500">{{ old('description') }}</textarea>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Status *
+                </label>
+                <select name="is_active" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition bg-white">
+                    <option value="1" @selected(old('is_active', '1') == '1')>Active</option>
+                    <option value="0" @selected(old('is_active') == '0')>Inactive</option>
+                </select>
             </div>
+        </div>
 
-            <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" id="is_active" value="1" @checked(old('is_active', 1)) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                <label for="is_active" class="text-sm font-medium text-slate-700">Is Product Active?</label>
-            </div>
+        <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+            <a href="{{ route('loan-products.index') }}" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl text-sm hover:bg-slate-50 transition">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-sm shadow-md shadow-blue-600/20 hover:bg-blue-700 transition">
+                Save Product
+            </button>
+        </div>
+    </form>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                <a href="{{ route('loan-products.index') }}" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200">Cancel</a>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 shadow-lg shadow-blue-600/20">
-                    Create Loan Product
-                </button>
-            </div>
-        </form>
-    </div>
 </div>
+
 @endsection
