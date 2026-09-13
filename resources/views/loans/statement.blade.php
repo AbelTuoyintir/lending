@@ -8,7 +8,7 @@
 
     <div class="flex items-center justify-between print:hidden">
         <a href="{{ route('loans.show', $loan) }}" class="text-xs font-semibold text-blue-600 hover:underline">
-            &larr; Back to Loan Details
+            &larr; Back to Loa Details
         </a>
         <button onclick="window.print()" class="px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-md hover:bg-slate-800 transition flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
