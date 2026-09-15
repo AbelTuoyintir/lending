@@ -9,7 +9,7 @@
             404
         </div>
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">Page Not Found</h1>
+            <h1 class="text-2xl font-bold text-slate-900">Page Not Found!!commit</h1>
             <p class="text-xs text-slate-500 mt-2">The requested administrative resource could not be found or has been moved.</p>
         </div>
         <div>
