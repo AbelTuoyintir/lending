@@ -52,6 +52,11 @@ class DashboardController extends Controller
             'fully_paid'
         )->count();
 
+        $defaultedLoans = Loan::where(
+            'status',
+            'defaulted'
+        )->count();
+
         $todayPayments = Payment::where(
             'status',
             'completed'
@@ -99,6 +104,7 @@ class DashboardController extends Controller
             'totalOutstanding',
             'overdueLoans',
             'fullyPaidLoans',
+            'defaultedLoans',
             'todayPayments',
             'monthPayments',
             'recentLoans',
