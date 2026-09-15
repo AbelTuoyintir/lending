@@ -157,7 +157,7 @@
                 <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Active ({{ $activeLoans }})</div>
                 <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Fully Paid ({{ $fullyPaidLoans }})</div>
                 <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Overdue ({{ $overdueLoans }})</div>
-                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Defaulted (\App\Models\Loan::where('status', 'defaulted')->count())</div>
+                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Defaulted ({{ $defaultedLoans }})</div>
             </div>
         </div>
 
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         {{ $activeLoans }},
                         {{ $fullyPaidLoans }},
                         {{ $overdueLoans }},
-                        {{ \App\Models\Loan::where('status', 'defaulted')->count() }}
+                        {{ $defaultedLoans }}
                     ],
                     backgroundColor: ['#2563eb', '#10b981', '#f97316', '#dc2626'],
                     borderWidth: 2,
