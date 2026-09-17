@@ -17,7 +17,7 @@ class AuditLogController extends Controller
                 'module' => 'Payments',
                 'record' => 'PMT-001092',
                 'ip_address' => '127.0.0.1',
-                'description' => 'Recorded repayment of GHS 500.00 for loan LN-000001'
+                'description' => 'Recorded repayment of GHS 500.00 for loan LN-000001',
             ],
             [
                 'date' => now()->subHours(2)->format('d M Y, H:i'),
@@ -26,7 +26,7 @@ class AuditLogController extends Controller
                 'module' => 'Loans',
                 'record' => 'LN-000001',
                 'ip_address' => '127.0.0.1',
-                'description' => 'Disbursed principal of GHS 1,000.00 to borrower John Doe'
+                'description' => 'Disbursed principal of GHS 1,000.00 to borrower John Doe',
             ],
             [
                 'date' => now()->subHours(5)->format('d M Y, H:i'),
@@ -35,7 +35,7 @@ class AuditLogController extends Controller
                 'module' => 'Loans',
                 'record' => 'LN-000001',
                 'ip_address' => '127.0.0.1',
-                'description' => 'Approved loan application after credit review'
+                'description' => 'Approved loan application after credit review',
             ],
             [
                 'date' => now()->subDays(1)->format('d M Y, H:i'),
@@ -44,7 +44,7 @@ class AuditLogController extends Controller
                 'module' => 'Customers',
                 'record' => 'CUST-0001',
                 'ip_address' => '127.0.0.1',
-                'description' => 'Registered new customer John Doe'
+                'description' => 'Registered new customer John Doe',
             ],
         ]);
 
