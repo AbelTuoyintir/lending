@@ -12,11 +12,11 @@ class CollectionsController extends Controller
         $loans = Loan::query()
             ->with([
                 'customer',
-                'loanProduct'
+                'loanProduct',
             ])
             ->whereIn('status', [
                 'overdue',
-                'defaulted'
+                'defaulted',
             ])
             ->where(
                 'outstanding_balance',
@@ -75,7 +75,7 @@ class CollectionsController extends Controller
             'customer',
             'repayments',
             'payments',
-            'interestCycles'
+            'interestCycles',
         ]);
 
         return view(

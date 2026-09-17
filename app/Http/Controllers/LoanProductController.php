@@ -16,7 +16,7 @@ class LoanProductController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('code', 'like', "%{$search}%");
+                        ->orWhere('code', 'like', "%{$search}%");
                 });
             })
             ->when($request->has('is_active') && $request->is_active !== null && $request->is_active !== '', function ($query) use ($request) {
@@ -91,7 +91,7 @@ class LoanProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:50', 'unique:loan_products,code,' . $loanProduct->id],
+            'code' => ['required', 'string', 'max:50', 'unique:loan_products,code,'.$loanProduct->id],
             'description' => ['nullable', 'string'],
             'min_amount' => ['required', 'numeric', 'min:0'],
             'max_amount' => ['required', 'numeric', 'gte:min_amount'],
