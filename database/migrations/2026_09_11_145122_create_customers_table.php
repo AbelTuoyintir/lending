@@ -31,7 +31,7 @@ return new class extends Migration
             $table->enum('status', [
                 'active',
                 'inactive',
-                'blacklisted'
+                'blacklisted',
             ])->default('active');
 
             $table->text('notes')->nullable();

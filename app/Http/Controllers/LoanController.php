@@ -7,14 +7,12 @@ use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Services\LoanService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class LoanController extends Controller
 {
     public function __construct(
         protected LoanService $loanService
-    ) {
-    }
+    ) {}
 
     /**
      * Display all loans.
@@ -136,11 +134,11 @@ class LoanController extends Controller
         $validated = $request->validate([
             'financial_account_id' => [
                 'required',
-                'exists:financial_accounts,id'
+                'exists:financial_accounts,id',
             ],
             'disbursement_date' => [
                 'required',
-                'date'
+                'date',
             ],
         ]);
 
