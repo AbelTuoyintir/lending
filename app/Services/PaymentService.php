@@ -31,7 +31,7 @@ class PaymentService
                 ->lockForUpdate()
                 ->findOrFail($loan->id);
 
-            if (!in_array($loan->status, [
+            if (! in_array($loan->status, [
                 'disbursed',
                 'active',
                 'partially_paid',
@@ -87,22 +87,17 @@ class PaymentService
 
                 'amount' => $paymentAmount,
 
-                'payment_method' =>
-                    $data['payment_method'],
+                'payment_method' => $data['payment_method'],
 
-                'reference' =>
-                    $data['reference'],
+                'reference' => $data['reference'],
 
-                'payment_date' =>
-                    $data['payment_date'],
+                'payment_date' => $data['payment_date'],
 
                 'status' => 'completed',
 
-                'received_by' =>
-                    auth()->id(),
+                'received_by' => auth()->id(),
 
-                'notes' =>
-                    $data['notes'] ?? null,
+                'notes' => $data['notes'] ?? null,
             ]);
 
             /*
@@ -147,8 +142,7 @@ class PaymentService
             $loan->update([
                 'amount_paid' => $newAmountPaid,
 
-                'outstanding_balance' =>
-                    $newOutstandingBalance,
+                'outstanding_balance' => $newOutstandingBalance,
 
                 'status' => $status,
             ]);
@@ -176,7 +170,7 @@ class PaymentService
             /*
              * Update financial account if supplied.
              */
-            if (!empty($data['financial_account_id'])) {
+            if (! empty($data['financial_account_id'])) {
                 $this->recordFinancialTransaction(
                     $payment,
                     $loan,
@@ -256,8 +250,8 @@ class PaymentService
                 'status' => 'reversed',
 
                 'notes' => trim(
-                    ($payment->notes ?? '') .
-                    "\nReversed: " .
+                    ($payment->notes ?? '').
+                    "\nReversed: ".
                     $reason
                 ),
             ]);
@@ -288,20 +282,15 @@ class PaymentService
         ]);
 
         return FinancialTransaction::create([
-            'transaction_number' =>
-                'TXN-' . strtoupper(Str::random(12)),
+            'transaction_number' => 'TXN-'.strtoupper(Str::random(12)),
 
-            'financial_account_id' =>
-                $account->id,
+            'financial_account_id' => $account->id,
 
-            'loan_id' =>
-                $loan->id,
+            'loan_id' => $loan->id,
 
-            'customer_id' =>
-                $loan->customer_id,
+            'customer_id' => $loan->customer_id,
 
-            'type' =>
-                'principal_repayment',
+            'type' => 'principal_repayment',
 
             'debit' => 0,
 
@@ -309,17 +298,13 @@ class PaymentService
 
             'balance_after' => $newBalance,
 
-            'reference' =>
-                $payment->reference,
+            'reference' => $payment->reference,
 
-            'description' =>
-                'Loan repayment',
+            'description' => 'Loan repayment',
 
-            'created_by' =>
-                auth()->id(),
+            'created_by' => auth()->id(),
 
-            'transaction_date' =>
-                $payment->payment_date,
+            'transaction_date' => $payment->payment_date,
         ]);
     }
 
@@ -334,7 +319,7 @@ class PaymentService
             ->latest('cycle_date')
             ->first();
 
-        if (!$cycle) {
+        if (! $cycle) {
             return;
         }
 
@@ -345,8 +330,7 @@ class PaymentService
                 2
             ),
 
-            'closing_balance' =>
-                $loan->outstanding_balance,
+            'closing_balance' => $loan->outstanding_balance,
         ]);
     }
 
@@ -357,9 +341,9 @@ class PaymentService
     {
         do {
             $paymentNumber =
-                'PAY-' .
-                now()->format('YmdHis') .
-                '-' .
+                'PAY-'.
+                now()->format('YmdHis').
+                '-'.
                 strtoupper(Str::random(5));
 
         } while (

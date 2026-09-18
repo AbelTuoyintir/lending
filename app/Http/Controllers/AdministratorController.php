@@ -13,7 +13,7 @@ class AdministratorController extends Controller
         $administrators = User::query()
             ->when($request->search, function ($q, $search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(20)

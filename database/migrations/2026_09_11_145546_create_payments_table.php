@@ -28,7 +28,7 @@ return new class extends Migration
                 'mobile_money',
                 'bank_transfer',
                 'card',
-                'other'
+                'other',
             ]);
 
             /*
@@ -41,7 +41,7 @@ return new class extends Migration
 
             $table->enum('status', [
                 'completed',
-                'reversed'
+                'reversed',
             ])->default('completed');
 
             $table->foreignId('received_by')
