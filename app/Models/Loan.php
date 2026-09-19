@@ -78,16 +78,6 @@ class Loan extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function loanFees()
-    {
-        return $this->hasMany(LoanFee::class);
-    }
-
-    public function agreement()
-    {
-        return $this->hasOne(LoanAgreement::class);
-    }
-
     public function financialTransactions()
     {
         return $this->hasMany(FinancialTransaction::class);

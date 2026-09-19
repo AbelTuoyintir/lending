@@ -86,6 +86,48 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Interest Type *
+                </label>
+                <select name="interest_type" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition bg-white">
+                    <option value="flat" @selected(old('interest_type', $loanProduct->interest_type) === 'flat')>Flat</option>
+                    <option value="reducing_balance" @selected(old('interest_type', $loanProduct->interest_type) === 'reducing_balance')>Reducing Balance</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Repayment Frequency *
+                </label>
+                <select name="repayment_frequency" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition bg-white">
+                    <option value="daily" @selected(old('repayment_frequency', $loanProduct->repayment_frequency) === 'daily')>Daily</option>
+                    <option value="weekly" @selected(old('repayment_frequency', $loanProduct->repayment_frequency) === 'weekly')>Weekly</option>
+                    <option value="biweekly" @selected(old('repayment_frequency', $loanProduct->repayment_frequency) === 'biweekly')>Biweekly</option>
+                    <option value="monthly" @selected(old('repayment_frequency', $loanProduct->repayment_frequency) === 'monthly')>Monthly</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Minimum Duration (months) *
+                </label>
+                <input type="number" min="1" name="min_duration" value="{{ old('min_duration', $loanProduct->min_duration) }}" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
+                    Maximum Duration (months) *
+                </label>
+                <input type="number" min="1" name="max_duration" value="{{ old('max_duration', $loanProduct->max_duration) }}" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
+            </div>
+        </div>
+
         <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
             <a href="{{ route('loan-products.index') }}" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded-xl text-sm hover:bg-slate-50 transition">
                 Cancel

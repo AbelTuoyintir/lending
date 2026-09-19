@@ -42,14 +42,24 @@
                     showCancelButton: true,
                     confirmButtonText: 'Disburse Funds',
                     confirmButtonColor: '#2563eb'
-                }).then((r) => { if (r.isConfirmed) document.getElementById('disburseForm').submit(); })" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md transition">
+                }).then((r) => { if (r.isConfirmed) document.getElementById('disburseForm').submit(); })" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md transition" @disabled($financialAccounts->isEmpty())>
                     ⚡ Disburse Funds
                 </button>
-                <form id="disburseForm" action="{{ route('loans.disburse', $loan) }}" method="POST" class="hidden">
+                <form id="disburseForm" action="{{ route('loans.disburse', $loan) }}" method="POST" class="flex items-center gap-2">
                     @csrf
-                    <input type="hidden" name="financial_account_id" value="1">
+                    <select name="financial_account_id" required class="px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select a financial account</option>
+                        @foreach($financialAccounts as $financialAccount)
+                            <option value="{{ $financialAccount->id }}">
+                                {{ $financialAccount->name }} ({{ $financialAccount->account_number }})
+                            </option>
+                        @endforeach
+                    </select>
                     <input type="hidden" name="disbursement_date" value="{{ date('Y-m-d') }}">
                 </form>
+                @if($financialAccounts->isEmpty())
+                    <span class="text-xs text-amber-600">No active financial account is available for disbursement.</span>
+                @endif
             @endif
 
             @if(in_array($loan->status, ['disbursed', 'active', 'partially_paid', 'overdue']))

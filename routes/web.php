@@ -136,6 +136,16 @@ Route::middleware('auth')->group(function () {
     )->name('payments.index');
 
     Route::get(
+        '/payments/create',
+        [PaymentController::class, 'manualCreate']
+    )->name('payments.manual-create');
+
+    Route::post(
+        '/payments',
+        [PaymentController::class, 'manualStore']
+    )->name('payments.manual-store');
+
+    Route::get(
         '/payments/{payment}',
         [PaymentController::class, 'show']
     )->name('payments.show');

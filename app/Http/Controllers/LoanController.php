@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\FinancialAccount;
 use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Services\LoanService;
@@ -95,17 +96,20 @@ class LoanController extends Controller
      */
     public function show(Loan $loan)
     {
+        $financialAccounts = FinancialAccount::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         $loan->load([
             'customer',
             'loanProduct',
             'repayments',
             'payments.allocations',
-            'loanFees.fee',
             'interestCycles',
-            'agreement',
         ]);
 
-        return view('loans.show', compact('loan'));
+        return view('loans.show', compact('loan', 'financialAccounts'));
     }
 
     /**

@@ -6,6 +6,16 @@
 @section('content')
 <div class="space-y-6">
 
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900">Payment Records</h1>
+            <p class="text-xs text-slate-500 mt-1">Track client repayments and cash collections.</p>
+        </div>
+        <a href="{{ route('payments.manual-create') }}" class="shrink-0 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-blue-600/20 transition">
+            Add Manual Payment
+        </a>
+    </div>
+
     {{-- Top Metric Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
