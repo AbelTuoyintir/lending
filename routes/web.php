@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\FinancialAccountController;
 use App\Http\Controllers\InterestCycleController;
 use App\Http\Controllers\CollectionsController;
 use App\Http\Controllers\ReportsController;
@@ -226,6 +227,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    Route::resource('financial-accounts', FinancialAccountController::class)->only(['index', 'create', 'store']);
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
