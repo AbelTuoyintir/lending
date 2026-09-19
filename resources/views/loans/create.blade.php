@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Create Loan | FinCore')
-@section('page-title', 'Create New Loan')
+@section('title', 'Create Lending | FinCore')
+@section('page-title', 'Create New Lending')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6" x-data="loanCalculator()">
 
     <div class="flex items-center justify-between">
         <div>
-            <a href="{{ route('loans.index') }}" class="text-xs text-slate-500 hover:text-slate-800">← Back to Loans</a>
-            <h1 class="text-2xl font-bold text-slate-900 mt-1">Issue New Administrative Loan</h1>
+            <a href="{{ route('loans.index') }}" class="text-xs text-slate-500 hover:text-slate-800">← Back to Lendings</a>
+            <h1 class="text-2xl font-bold text-slate-900 mt-1">Issue New Administrative Lending</h1>
             <p class="text-xs text-slate-500">Repayment is aligned with calendar month-end. Default interest rate is 30%.</p>
         </div>
     </div>
@@ -64,13 +64,13 @@
             <div class="border-b border-slate-100 pb-3">
                 <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
                     <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">2</span>
-                    Loan Details & Product
+                    Lending Details & Product
                 </h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Loan Product *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Product *</label>
                     <select name="loan_product_id" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
                         @foreach($loanProducts as $product)
                             <option value="{{ $product->id }}" @selected(old('loan_product_id') == $product->id)>
@@ -86,7 +86,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Loan Date *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Date *</label>
                     <input type="date" name="loan_date" x-model="loanDate" @change="calculateDueDate()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500">
                 </div>
 
@@ -98,7 +98,7 @@
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Administrative Notes</label>
-                <textarea name="notes" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Purpose of loan, collateral details, or approval remarks..."></textarea>
+                <textarea name="notes" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Purpose of the money requested, collateral details, or approval remarks..."></textarea>
             </div>
         </div>
 

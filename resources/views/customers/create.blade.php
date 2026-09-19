@@ -31,7 +31,7 @@
             </h1>
 
             <p class="text-sm text-slate-500 mt-1">
-                Create a borrower profile before issuing a loan.
+                Create a borrower profile before issuing a lending.
             </p>
 
         </div>

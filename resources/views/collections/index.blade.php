@@ -9,7 +9,7 @@
     {{-- Debt Collections Summary Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Overdue Loans</p>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Lending Overdue</p>
             <h3 class="text-2xl font-bold text-red-600 mt-1">{{ number_format($loans->total()) }}</h3>
             <p class="text-xs text-red-600/80 mt-1">Past calendar month-end due date</p>
         </div>
@@ -27,7 +27,7 @@
         </div>
 
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Defaulted Loans</p>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Defaulted Lendings</p>
             <h3 class="text-2xl font-bold text-slate-900 mt-1">{{ number_format(\App\Models\Loan::where('status', 'defaulted')->count()) }}</h3>
             <p class="text-xs text-slate-500 mt-1">Passed collection window</p>
         </div>
@@ -46,7 +46,7 @@
         <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
             <div>
                 <h3 class="font-bold text-slate-900 text-base">Priority Collection Action Queue</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Loans sorted by highest outstanding balance requiring recovery.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Lending amount sorted by highest outstanding balance requiring recovery.</p>
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                 <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <tr>
                         <th class="px-5 py-3.5">Customer / Contact</th>
-                        <th class="px-5 py-3.5">Loan Number</th>
+                        <th class="px-5 py-3.5">Lending Number</th>
                         <th class="px-5 py-3.5 text-right">Original Principal</th>
                         <th class="px-5 py-3.5 text-right">Amount Paid</th>
                         <th class="px-5 py-3.5 text-right">Current Outstanding</th>
@@ -93,8 +93,8 @@
                     @empty
                         <tr>
                             <td colspan="8" class="px-5 py-12 text-center text-slate-400">
-                                <p class="font-bold text-slate-700 text-sm">No overdue loans found!</p>
-                                <p class="text-xs text-slate-400 mt-1">All active loans are currently within healthy repayment windows.</p>
+                                <p class="font-bold text-slate-700 text-sm">No overdue payment found!</p>
+                                <p class="text-xs text-slate-400 mt-1">All active lending are currently within healthy repayment windows.</p>
                             </td>
                         </tr>
                     @endforelse

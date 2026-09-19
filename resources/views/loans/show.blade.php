@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Loan ' . $loan->loan_number . ' | FinCore')
-@section('page-title', 'Loan Details')
+@section('title', 'Lending ' . $loan->loan_number . ' | FinCore')
+@section('page-title', 'Lending Details')
 
 @section('content')
 <div class="space-y-8">
@@ -10,7 +10,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('loans.index') }}" class="text-xs text-slate-400 hover:text-slate-600">← Back to Loans</a>
+                <a href="{{ route('loans.index') }}" class="text-xs text-slate-400 hover:text-slate-600">← Back to Lendings</a>
                 <span class="text-slate-300">•</span>
                 <span class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">{{ $loan->loan_number }}</span>
                 <x-status-badge :status="$loan->status" />
@@ -62,7 +62,7 @@
                 <form action="{{ route('loans.cancel', $loan) }}" method="POST" onsubmit="return confirm('Cancel this loan?');">
                     @csrf
                     <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
-                        Cancel Loan
+                        Cancel Lending
                     </button>
                 </form>
             @endif
@@ -212,7 +212,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-slate-400">No payments have been recorded for this loan.</td>
+                            <td colspan="6" class="px-4 py-8 text-center text-slate-400">No payments have been recorded for this Lending.</td>
                         </tr>
                     @endforelse
                 </tbody>

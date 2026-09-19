@@ -47,7 +47,7 @@
         </div>
 
         <div class="card">
-            <h4>Loan Details</h4>
+            <h4>Lending Details</h4>
             <p style="margin: 0; font-size: 15px; font-weight: bold;">Loan #: {{ $loan->loan_number }}</p>
             <p style="margin: 4px 0 0 0; color: #475569;">Disbursed: {{ $loan->disbursement_date ? $loan->disbursement_date->format('d M Y') : 'N/A' }}</p>
             <p style="margin: 2px 0 0 0; color: #475569;">Due Date: {{ $loan->maturity_date ? $loan->maturity_date->format('d M Y') : 'Calendar Month-End' }}</p>

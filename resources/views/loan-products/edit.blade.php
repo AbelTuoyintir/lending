@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Loan Product | FinCore')
+@section('title', 'Edit Lending Product | FinCore')
 
 @section('content')
 
@@ -8,10 +8,10 @@
 
     <div>
         <a href="{{ route('loan-products.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
-            &larr; Back to loan products
+            &larr; Back to Lending products
         </a>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 mt-2">
-            Edit Loan Product: {{ $loanProduct->name }}
+            Edit Lending Product: {{ $loanProduct->name }}
         </h1>
     </div>
 

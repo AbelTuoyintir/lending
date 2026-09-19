@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Overdue Loan Collection | FinCore')
+@section('title', 'Overdue Lending Collection | FinCore')
 @section('page-title', 'Collection Profile')
 
 @section('content')

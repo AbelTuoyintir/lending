@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Loan Product | FinCore')
+@section('title', 'Create Lending Product | FinCore')
 
 @section('content')
 
@@ -8,10 +8,10 @@
 
     <div>
         <a href="{{ route('loan-products.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
-            &larr; Back to loan products
+            &larr; Back to Lending products
         </a>
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 mt-2">
-            Create Loan Product
+            Create Lending Product
         </h1>
         <p class="text-sm text-slate-500 mt-1">
             Define product parameters, default initial interest rate, and borrowing bounds.
@@ -26,7 +26,7 @@
                 <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
                     Product Name *
                 </label>
-                <input type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. Standard Loan"
+                <input type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. Standard Lendings"
                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
             </div>
 
@@ -43,7 +43,7 @@
             <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
                 Description
             </label>
-            <textarea name="description" rows="2" placeholder="Brief description of loan product eligibility..."
+            <textarea name="description" rows="2" placeholder="Brief description of Lending product eligibility..."
                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">{{ old('description') }}</textarea>
         </div>
 

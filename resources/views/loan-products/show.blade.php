@@ -10,7 +10,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <a href="{{ route('loan-products.index') }}" class="text-xs font-semibold text-blue-600 hover:underline">
-                    &larr; Back to loan products
+                    &larr; Back to Lending products
                 </a>
                 <div class="flex items-center gap-3 mt-2">
                     <h1 class="text-2xl font-bold tracking-tight text-slate-900">{{ $loanProduct->name }}</h1>
@@ -38,7 +38,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Product Description & Terms</h3>
         <p class="text-xs text-slate-600 leading-relaxed">
-            {{ $loanProduct->description ?? 'Standard loan product template with 30% initial interest rate and 30% monthly compound interest on outstanding balances at month-end.' }}
+            {{ $loanProduct->description ?? 'Standard Lending product template with 30% initial interest rate and 30% monthly compound interest on outstanding balances at month-end.' }}
         </p>
     </div>
 

@@ -6,11 +6,11 @@
 <div class="space-y-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold">Loan Products</h1>
-            <p class="text-sm text-slate-500 mt-1">Configure interest rates, amounts, and duration rules for loans.</p>
+            <h1 class="text-2xl font-bold">Lending Products</h1>
+            <p class="text-sm text-slate-500 mt-1">Configure interest rates, amounts, and duration rules for Lendings.</p>
         </div>
         <a href="{{ route('loan-products.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/20">
-            + New Loan Product
+            + New Lending Product
         </a>
     </div>
 
@@ -76,7 +76,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-slate-400">No loan products found.</td>
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-400">No Lending products found.</td>
                         </tr>
                     @endforelse
                 </tbody>

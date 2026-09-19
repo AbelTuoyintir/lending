@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'FinCore — Loan Management System')</title>
+    <title>@yield('title', 'FinCore — Lending Management System')</title>
 
     @vite([
         'resources/css/app.css',
@@ -75,7 +75,7 @@
 
         {{-- Footer --}}
         <footer class="border-t border-slate-200 bg-white py-4 px-6 text-xs text-slate-400 text-center flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span>&copy; {{ date('Y') }} FinCore Administrative Loan Management System. All rights reserved.</span>
+            <span>&copy; {{ date('Y') }} FinCore Administrative Lending Management System. All rights reserved.</span>
             <span class="font-mono text-[10px]">Strictly Confidential & Confidential Internal Access Only</span>
         </footer>
 

@@ -8,13 +8,13 @@
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">Loan Portfolio</h1>
-            <p class="text-sm text-slate-500 mt-1">Manage all pending, active, overdue, and settled loans.</p>
+            <h1 class="text-2xl font-bold text-slate-900">Lending Portfolio</h1>
+            <p class="text-sm text-slate-500 mt-1">Manage all pending, active, overdue, and settled Lendings.</p>
         </div>
 
         <a href="{{ route('loans.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-600/20 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            + Create New Loan
+            + Create New Lending
         </a>
     </div>
 
@@ -27,7 +27,7 @@
 
             <div>
                 <select name="status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white text-slate-700 focus:ring-2 focus:ring-blue-500">
-                    <option value="">All Loan Statuses</option>
+                    <option value="">All Lending Statuses</option>
                     <option value="pending" @selected(request('status') === 'pending')>Pending</option>
                     <option value="approved" @selected(request('status') === 'approved')>Approved</option>
                     <option value="disbursed" @selected(request('status') === 'disbursed')>Disbursed / Active</option>
@@ -50,7 +50,7 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <tr>
-                        <th class="px-5 py-3.5">Loan Number</th>
+                        <th class="px-5 py-3.5">Lending Number</th>
                         <th class="px-5 py-3.5">Customer</th>
                         <th class="px-5 py-3.5 text-right">Principal</th>
                         <th class="px-5 py-3.5 text-right">Total Payable</th>
@@ -88,7 +88,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="px-5 py-12 text-center text-slate-400">
-                                <x-empty-state title="No loans found" message="Create a loan for an active customer to start tracking disbursements." actionUrl="{{ route('loans.create') }}" actionLabel="Create First Loan" />
+                                <x-empty-state title="No Lending found" message="Create a Lending for an active customer to start tracking disbursements." actionUrl="{{ route('loans.create') }}" actionLabel="Create First Lending" />
                             </td>
                         </tr>
                     @endforelse
