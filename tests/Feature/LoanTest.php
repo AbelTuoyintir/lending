@@ -73,6 +73,6 @@ class LoanTest extends TestCase
         $loan->refresh();
         $account->refresh();
         $this->assertEquals('active', $loan->status);
-        $this->assertEquals(9000.00, (float)$account->current_balance);
+        $this->assertEquals(9000.00, (float) $account->current_balance);
     }
 }

@@ -16,7 +16,7 @@ class LoanCalculationService
      */
     public function calculateMonthlyInterest(Loan $loan): array
     {
-        if (!in_array($loan->status, [
+        if (! in_array($loan->status, [
             'disbursed',
             'active',
             'partially_paid',
@@ -102,7 +102,7 @@ class LoanCalculationService
                 return $existingCycle;
             }
 
-            if (!in_array($loan->status, [
+            if (! in_array($loan->status, [
                 'disbursed',
                 'active',
                 'partially_paid',

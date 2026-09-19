@@ -62,8 +62,8 @@ class PaymentTest extends TestCase
         ]);
 
         $loan->refresh();
-        $this->assertEquals(200.00, (float)$loan->amount_paid);
-        $this->assertEquals(300.00, (float)$loan->outstanding_balance);
+        $this->assertEquals(200.00, (float) $loan->amount_paid);
+        $this->assertEquals(300.00, (float) $loan->outstanding_balance);
         $this->assertEquals('partially_paid', $loan->status);
     }
 }
