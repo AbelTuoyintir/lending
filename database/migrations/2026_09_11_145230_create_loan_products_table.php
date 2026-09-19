@@ -23,14 +23,14 @@ return new class extends Migration
 
             $table->enum('interest_type', [
                 'flat',
-                'reducing_balance'
+                'reducing_balance',
             ])->default('flat');
 
             $table->enum('repayment_frequency', [
                 'daily',
                 'weekly',
                 'biweekly',
-                'monthly'
+                'monthly',
             ])->default('monthly');
 
             $table->unsignedInteger('min_duration');

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\Payment;
-use App\Models\LoanRepayment;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -88,7 +86,7 @@ class DashboardController extends Controller
 
         $recentPayments = Payment::with([
             'customer',
-            'loan'
+            'loan',
         ])
             ->where('status', 'completed')
             ->latest('payment_date')

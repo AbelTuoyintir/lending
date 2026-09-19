@@ -49,13 +49,13 @@ class CustomerController extends Controller
             'monthly_income' => ['nullable', 'numeric', 'min:0'],
             'status' => [
                 'nullable',
-                'in:active,inactive,blacklisted'
+                'in:active,inactive,blacklisted',
             ],
             'notes' => ['nullable', 'string'],
         ]);
 
         $validated['customer_number'] =
-            'CUS-' . strtoupper(Str::random(8));
+            'CUS-'.strtoupper(Str::random(8));
 
         $customer = Customer::create($validated);
 
@@ -96,7 +96,7 @@ class CustomerController extends Controller
             'monthly_income' => ['nullable', 'numeric', 'min:0'],
             'status' => [
                 'required',
-                'in:active,inactive,blacklisted'
+                'in:active,inactive,blacklisted',
             ],
             'notes' => ['nullable', 'string'],
         ]);

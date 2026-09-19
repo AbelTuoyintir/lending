@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\LoanInterestCycle;
 
 class Loan extends Model
 {
@@ -102,7 +101,7 @@ class Loan extends Model
     {
         return $this->belongsTo(User::class, 'disbursed_by');
     }
-    
+
     public function interestCycles()
     {
         return $this->hasMany(LoanInterestCycle::class);

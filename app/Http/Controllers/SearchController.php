@@ -17,7 +17,7 @@ class SearchController extends Controller
         $loans = collect();
         $payments = collect();
 
-        if (!empty($query)) {
+        if (! empty($query)) {
             $customers = Customer::query()
                 ->where('first_name', 'like', "%{$query}%")
                 ->orWhere('last_name', 'like', "%{$query}%")
@@ -31,7 +31,7 @@ class SearchController extends Controller
                 ->where('loan_number', 'like', "%{$query}%")
                 ->orWhereHas('customer', function ($q) use ($query) {
                     $q->where('first_name', 'like', "%{$query}%")
-                      ->orWhere('last_name', 'like', "%{$query}%");
+                        ->orWhere('last_name', 'like', "%{$query}%");
                 })
                 ->limit(10)
                 ->get();

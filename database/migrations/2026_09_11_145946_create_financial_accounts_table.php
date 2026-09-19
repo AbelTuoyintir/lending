@@ -23,7 +23,7 @@ return new class extends Migration
                 'revenue',
                 'expense',
                 'asset',
-                'liability'
+                'liability',
             ])->default('bank');
 
             $table->string('bank_name')->nullable();
