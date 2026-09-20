@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\LoanController;
-use App\Http\Controllers\LoanProductController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\FinancialAccountController;
-use App\Http\Controllers\InterestCycleController;
-use App\Http\Controllers\CollectionsController;
-use App\Http\Controllers\ReportsController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CollectionsController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinancialAccountController;
+use App\Http\Controllers\InterestCycleController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StatementController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -68,7 +68,6 @@ Route::middleware('auth')->group(function () {
         [DashboardController::class, 'index']
     )->name('dashboard');
 
-
     /*
     |--------------------------------------------------------------------------
     | Customers
@@ -80,7 +79,6 @@ Route::middleware('auth')->group(function () {
         CustomerController::class
     );
 
-
     /*
     |--------------------------------------------------------------------------
     | Loan Products
@@ -91,7 +89,6 @@ Route::middleware('auth')->group(function () {
         'loan-products',
         LoanProductController::class
     );
-
 
     /*
     |--------------------------------------------------------------------------
@@ -123,7 +120,6 @@ Route::middleware('auth')->group(function () {
         '/loans/{loan}/cancel',
         [LoanController::class, 'cancel']
     )->name('loans.cancel');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -166,7 +162,6 @@ Route::middleware('auth')->group(function () {
         [PaymentController::class, 'reverse']
     )->name('payments.reverse');
 
-
     /*
     |--------------------------------------------------------------------------
     | Monthly Compound Interest
@@ -182,7 +177,6 @@ Route::middleware('auth')->group(function () {
         '/loans/{loan}/interest/apply',
         [InterestCycleController::class, 'apply']
     )->name('loans.interest.apply');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -200,7 +194,6 @@ Route::middleware('auth')->group(function () {
         [CollectionsController::class, 'show']
     )->name('collections.show');
 
-
     /*
     |--------------------------------------------------------------------------
     | Transactions Ledger
@@ -211,7 +204,6 @@ Route::middleware('auth')->group(function () {
         '/transactions',
         [TransactionController::class, 'index']
     )->name('transactions.index');
-
 
     /*
     |--------------------------------------------------------------------------
@@ -231,7 +223,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('financial-accounts', FinancialAccountController::class)->only(['index', 'create', 'store']);
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-
 
     /*
     |--------------------------------------------------------------------------

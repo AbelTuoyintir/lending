@@ -6,6 +6,7 @@ use App\Models\FinancialAccount;
 use App\Models\FinancialTransaction;
 use App\Models\Loan;
 use App\Models\LoanProduct;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -88,23 +89,17 @@ class LoanService
              * It will be added at calendar month-end.
              */
             $loan = Loan::create([
-                'loan_number' =>
-                    $this->generateLoanNumber(),
+                'loan_number' => $this->generateLoanNumber(),
 
-                'customer_id' =>
-                    $data['customer_id'],
+                'customer_id' => $data['customer_id'],
 
-                'loan_product_id' =>
-                    $data['loan_product_id'],
+                'loan_product_id' => $data['loan_product_id'],
 
-                'principal_amount' =>
-                    $principalAmount,
+                'principal_amount' => $principalAmount,
 
-                'interest_rate' =>
-                    $interestRate,
+                'interest_rate' => $interestRate,
 
-                'interest_type' =>
-                    $loanProduct->interest_type,
+                'interest_type' => $loanProduct->interest_type,
 
                 'interest_amount' => 0,
 
@@ -112,35 +107,28 @@ class LoanService
 
                 'penalty_amount' => 0,
 
-                'total_payable' =>
-                    $principalAmount,
+                'total_payable' => $principalAmount,
 
                 'amount_paid' => 0,
 
-                'outstanding_balance' =>
-                    $principalAmount,
+                'outstanding_balance' => $principalAmount,
 
-                'duration' =>
-                    $data['duration'],
+                'duration' => $data['duration'],
 
-                'repayment_frequency' =>
-                    $loanProduct->repayment_frequency,
+                'repayment_frequency' => $loanProduct->repayment_frequency,
 
-                'loan_date' =>
-                    $data['loan_date'],
+                'loan_date' => $data['loan_date'],
 
                 'disbursement_date' => null,
 
-                'first_payment_date' =>
-                    $data['first_payment_date'] ?? null,
+                'first_payment_date' => $data['first_payment_date'] ?? null,
 
                 /*
                  * Calendar month-end is used.
                  */
-                'maturity_date' =>
-                    \Carbon\Carbon::parse(
-                        $data['loan_date']
-                    )->endOfMonth(),
+                'maturity_date' => Carbon::parse(
+                    $data['loan_date']
+                )->endOfMonth(),
 
                 'status' => 'pending',
 
@@ -148,8 +136,7 @@ class LoanService
 
                 'disbursed_by' => null,
 
-                'notes' =>
-                    $data['notes'] ?? null,
+                'notes' => $data['notes'] ?? null,
             ]);
 
             return $loan;
@@ -176,8 +163,7 @@ class LoanService
             $loan->update([
                 'status' => 'approved',
 
-                'approved_by' =>
-                    auth()->id(),
+                'approved_by' => auth()->id(),
             ]);
 
             return $loan;
@@ -234,8 +220,7 @@ class LoanService
             );
 
             $account->update([
-                'current_balance' =>
-                    $newAccountBalance,
+                'current_balance' => $newAccountBalance,
             ]);
 
             /*
@@ -244,51 +229,38 @@ class LoanService
             $loan->update([
                 'status' => 'active',
 
-                'disbursement_date' =>
-                    $disbursementDate,
+                'disbursement_date' => $disbursementDate,
 
-                'disbursed_by' =>
-                    auth()->id(),
+                'disbursed_by' => auth()->id(),
             ]);
 
             /*
              * Record financial transaction.
              */
             FinancialTransaction::create([
-                'transaction_number' =>
-                    'TXN-' . strtoupper(Str::random(12)),
+                'transaction_number' => 'TXN-'.strtoupper(Str::random(12)),
 
-                'financial_account_id' =>
-                    $account->id,
+                'financial_account_id' => $account->id,
 
-                'loan_id' =>
-                    $loan->id,
+                'loan_id' => $loan->id,
 
-                'customer_id' =>
-                    $loan->customer_id,
+                'customer_id' => $loan->customer_id,
 
-                'type' =>
-                    'loan_disbursement',
+                'type' => 'loan_disbursement',
 
-                'debit' =>
-                    $principalAmount,
+                'debit' => $principalAmount,
 
                 'credit' => 0,
 
-                'balance_after' =>
-                    $newAccountBalance,
+                'balance_after' => $newAccountBalance,
 
-                'reference' =>
-                    $loan->loan_number,
+                'reference' => $loan->loan_number,
 
-                'description' =>
-                    'Loan disbursement',
+                'description' => 'Loan disbursement',
 
-                'created_by' =>
-                    auth()->id(),
+                'created_by' => auth()->id(),
 
-                'transaction_date' =>
-                    $disbursementDate,
+                'transaction_date' => $disbursementDate,
             ]);
 
             return $loan;
@@ -332,9 +304,9 @@ class LoanService
     {
         do {
             $loanNumber =
-                'LN-' .
-                now()->format('YmdHis') .
-                '-' .
+                'LN-'.
+                now()->format('YmdHis').
+                '-'.
                 strtoupper(Str::random(5));
 
         } while (

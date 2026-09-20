@@ -38,7 +38,7 @@ return new class extends Migration
                 'partial',
                 'paid',
                 'overdue',
-                'waived'
+                'waived',
             ])->default('pending');
 
             $table->date('paid_date')->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
 
             $table->unique([
                 'loan_id',
-                'installment_number'
+                'installment_number',
             ]);
 
             $table->index('due_date');

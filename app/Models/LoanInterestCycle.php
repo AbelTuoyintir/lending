@@ -37,4 +37,18 @@ class LoanInterestCycle extends Model
     {
         return $this->belongsTo(Loan::class);
     }
+
+    public function getInterestChargedAttribute(): float
+    {
+        return (float) ($this->attributes['interest_amount'] ?? 0);
+    }
+
+    public function getYearMonthAttribute(): string
+    {
+        if ($this->cycle_date) {
+            return $this->cycle_date->format('F Y');
+        }
+
+        return 'Cycle #'.$this->cycle_number;
+    }
 }

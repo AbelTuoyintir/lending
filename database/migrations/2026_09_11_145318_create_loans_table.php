@@ -30,7 +30,7 @@ return new class extends Migration
 
             $table->enum('interest_type', [
                 'flat',
-                'reducing_balance'
+                'reducing_balance',
             ]);
 
             $table->decimal('interest_amount', 15, 2)->default(0);
@@ -54,7 +54,7 @@ return new class extends Migration
                 'daily',
                 'weekly',
                 'biweekly',
-                'monthly'
+                'monthly',
             ]);
 
             /*
@@ -82,7 +82,7 @@ return new class extends Migration
                 'overdue',
                 'defaulted',
                 'written_off',
-                'cancelled'
+                'cancelled',
             ])->default('draft');
 
             /*

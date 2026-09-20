@@ -33,19 +33,19 @@ return new class extends Migration
             $table->enum('status', [
                 'pending',
                 'applied',
-                'skipped'
+                'skipped',
             ])->default('pending');
 
             $table->timestamps();
 
             $table->unique([
                 'loan_id',
-                'cycle_number'
+                'cycle_number',
             ]);
 
             $table->index([
                 'loan_id',
-                'cycle_date'
+                'cycle_date',
             ]);
 
             $table->index('status');

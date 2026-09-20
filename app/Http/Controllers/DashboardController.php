@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\Payment;
-use App\Models\LoanRepayment;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -14,10 +12,7 @@ class DashboardController extends Controller
     {
         $totalCustomers = Customer::count();
 
-        $activeCustomers = Customer::where(
-            'status',
-            'active'
-        )->count();
+        $activeCustomers = Customer::where('status', 'active')->count();
 
         $activeLoans = Loan::whereIn('status', [
             'disbursed',
@@ -26,14 +21,11 @@ class DashboardController extends Controller
             'overdue',
         ])->count();
 
-        $totalPrincipalDisbursed = Loan::whereNotNull(
-            'disbursement_date'
-        )->sum('principal_amount');
+        $totalPrincipalDisbursed = Loan::whereNotNull('disbursement_date')
+            ->sum('principal_amount');
 
-        $totalAmountPaid = Payment::where(
-            'status',
-            'completed'
-        )->sum('amount');
+        $totalAmountPaid = Payment::where('status', 'completed')
+            ->sum('amount');
 
         $totalOutstanding = Loan::whereIn('status', [
             'disbursed',
@@ -47,38 +39,17 @@ class DashboardController extends Controller
             'defaulted',
         ])->count();
 
-        $fullyPaidLoans = Loan::where(
-            'status',
-            'fully_paid'
-        )->count();
+        $fullyPaidLoans = Loan::where('status', 'fully_paid')->count();
 
-        $defaultedLoans = Loan::where(
-            'status',
-            'defaulted'
-        )->count();
+        $defaultedLoans = Loan::where('status', 'defaulted')->count();
 
-        $todayPayments = Payment::where(
-            'status',
-            'completed'
-        )
-            ->whereDate(
-                'payment_date',
-                today()
-            )
+        $todayPayments = Payment::where('status', 'completed')
+            ->whereDate('payment_date', today())
             ->sum('amount');
 
-        $monthPayments = Payment::where(
-            'status',
-            'completed'
-        )
-            ->whereMonth(
-                'payment_date',
-                now()->month
-            )
-            ->whereYear(
-                'payment_date',
-                now()->year
-            )
+        $monthPayments = Payment::where('status', 'completed')
+            ->whereMonth('payment_date', now()->month)
+            ->whereYear('payment_date', now()->year)
             ->sum('amount');
 
         $recentLoans = Loan::with('customer')
@@ -88,12 +59,31 @@ class DashboardController extends Controller
 
         $recentPayments = Payment::with([
             'customer',
-            'loan'
+            'loan',
         ])
             ->where('status', 'completed')
             ->latest('payment_date')
             ->limit(10)
             ->get();
+
+        $upcomingDueLoans = Loan::with('customer')
+            ->whereIn('status', ['disbursed', 'active', 'partially_paid'])
+            ->where('outstanding_balance', '>', 0)
+            ->orderBy('maturity_date', 'asc')
+            ->limit(5)
+            ->get();
+
+        $priorityOverdueLoans = Loan::with('customer')
+            ->whereIn('status', ['overdue', 'defaulted'])
+            ->where('outstanding_balance', '>', 0)
+            ->orderByDesc('outstanding_balance')
+            ->limit(5)
+            ->get();
+
+        $expectedCollection = $totalAmountPaid + $totalOutstanding;
+        $collectionPercentage = $expectedCollection > 0
+            ? round(($totalAmountPaid / $expectedCollection) * 100, 1)
+            : 0;
 
         return view('dashboard', compact(
             'totalCustomers',
@@ -108,7 +98,11 @@ class DashboardController extends Controller
             'todayPayments',
             'monthPayments',
             'recentLoans',
-            'recentPayments'
+            'recentPayments',
+            'upcomingDueLoans',
+            'priorityOverdueLoans',
+            'expectedCollection',
+            'collectionPercentage'
         ));
     }
 }

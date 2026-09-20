@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Loan;
 use App\Services\LoanCalculationService;
-use Illuminate\Http\Request;
 
 class InterestCycleController extends Controller
 {
     public function __construct(
         protected LoanCalculationService $loanCalculationService
-    ) {
-    }
+    ) {}
 
     /**
      * Show the current month's interest calculation.
@@ -38,8 +36,8 @@ class InterestCycleController extends Controller
 
             return back()->with(
                 'success',
-                'Monthly compound interest of GHS ' .
-                number_format($cycle->interest_amount, 2) .
+                'Monthly compound interest of GHS '.
+                number_format($cycle->interest_amount, 2).
                 ' has been applied.'
             );
         } catch (\Throwable $e) {

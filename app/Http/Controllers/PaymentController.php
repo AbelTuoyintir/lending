@@ -11,8 +11,7 @@ class PaymentController extends Controller
 {
     public function __construct(
         protected PaymentService $paymentService
-    ) {
-    }
+    ) {}
 
     /**
      * Display recorded payments.
@@ -122,34 +121,34 @@ class PaymentController extends Controller
             'amount' => [
                 'required',
                 'numeric',
-                'min:0.01'
+                'min:0.01',
             ],
 
             'payment_method' => [
                 'required',
-                'in:cash,mobile_money,bank_transfer,card,other'
+                'in:cash,mobile_money,bank_transfer,card,other',
             ],
 
             'reference' => [
                 'required',
                 'string',
                 'max:255',
-                'unique:payments,reference'
+                'unique:payments,reference',
             ],
 
             'payment_date' => [
                 'required',
-                'date'
+                'date',
             ],
 
             'financial_account_id' => [
                 'nullable',
-                'exists:financial_accounts,id'
+                'exists:financial_accounts,id',
             ],
 
             'notes' => [
                 'nullable',
-                'string'
+                'string',
             ],
         ]);
 
@@ -163,9 +162,9 @@ class PaymentController extends Controller
                 ->route('loans.show', $loan)
                 ->with(
                     'success',
-                    "Payment of GHS " .
-                    number_format($payment->amount, 2) .
-                    " recorded successfully."
+                    'Payment of GHS '.
+                    number_format($payment->amount, 2).
+                    ' recorded successfully.'
                 );
         } catch (\Throwable $e) {
             return back()
@@ -183,7 +182,7 @@ class PaymentController extends Controller
             'reason' => [
                 'required',
                 'string',
-                'min:5'
+                'min:5',
             ],
         ]);
 
