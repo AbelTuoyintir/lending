@@ -38,7 +38,7 @@
     <div>
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Key Performance Indicators</h2>
-            <span class="text-xs text-slate-400">Currency: GHS (Ghana Cedi)</span>
+            <span class="text-xs text-slate-400 font-mono font-semibold">Currency: GHS (Ghana Cedi)</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -80,7 +80,7 @@
 
             {{-- 6. Total Interest Generated --}}
             @php
-                $totalInterest = \App\Models\Loan::sum('interest_amount') + \App\Models\LoanInterestCycle::sum('interest_charged');
+                $totalInterest = \App\Models\Loan::sum('interest_amount') + \App\Models\LoanInterestCycle::sum('interest_amount');
             @endphp
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Interest Generated</p>
@@ -129,11 +129,13 @@
         <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h3 class="font-bold text-slate-900 text-base">Portfolio Overview</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Disbursements, collections, interest, and outstanding balance</p>
+                    <h3 class="font-bold text-slate-900 text-base">Portfolio Performance Overview</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Disbursements, collections, interest, and outstanding balance tracking</p>
                 </div>
                 <select class="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>Last 7 days</option>
                     <option>Last 30 days</option>
+                    <option>Last 3 months</option>
                     <option selected>Last 6 months</option>
                     <option>Last 12 months</option>
                     <option>Current year</option>
@@ -144,30 +146,56 @@
             </div>
         </div>
 
-        {{-- Loan Status Distribution Doughnut --}}
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
-            <div>
-                <h3 class="font-bold text-slate-900 text-base">Loan Status Distribution</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Active, overdue, paid, and defaulted breakdown</p>
+        {{-- Collection Performance & Distribution --}}
+        <div class="space-y-6 flex flex-col justify-between">
+
+            {{-- Collection Performance Meter Card --}}
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-slate-900 text-sm">Collection Performance</h3>
+                    <span class="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md">{{ $collectionPercentage }}% Recovered</span>
+                </div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Actual Collections:</span>
+                        <span class="font-bold text-emerald-600">GHS {{ number_format($totalAmountPaid, 2) }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Total Portfolio Value:</span>
+                        <span class="font-bold text-slate-900">GHS {{ number_format($expectedCollection, 2) }}</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden mt-2">
+                        <div class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: {{ min(100, $collectionPercentage) }}%"></div>
+                    </div>
+                </div>
             </div>
-            <div class="h-56 my-4">
-                <canvas id="statusDistributionChart"></canvas>
+
+            {{-- Loan Status Distribution Doughnut --}}
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-sm">Loan Status Distribution</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Portfolio status breakdown</p>
+                </div>
+                <div class="h-44 my-2">
+                    <canvas id="statusDistributionChart"></canvas>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-3">
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Active ({{ $activeLoans }})</div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Fully Paid ({{ $fullyPaidLoans }})</div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Overdue ({{ $overdueLoans }})</div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Defaulted ({{ $defaultedLoans }})</div>
+                </div>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-3">
-                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Active ({{ $activeLoans }})</div>
-                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Fully Paid ({{ $fullyPaidLoans }})</div>
-                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Overdue ({{ $overdueLoans }})</div>
-                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Defaulted ({{ $defaultedLoans }})</div>
-            </div>
+
         </div>
 
     </div>
 
-    {{-- Tables Section --}}
+    {{-- Tables Grid Section --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {{-- Recent Loans --}}
-        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs flex flex-col justify-between">
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base">Recent Loans</h3>
@@ -210,8 +238,8 @@
             </div>
         </div>
 
-        {{-- Recent Payments --}}
-        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs flex flex-col justify-between">
+        {{-- Recent Collections --}}
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base">Recent Collections</h3>
@@ -245,6 +273,96 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-5 py-8 text-center text-slate-400">No payments recorded yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Upcoming Due Loans --}}
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base">Upcoming Month-End Due Loans</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Active loans approaching month-end repayment deadline</p>
+                </div>
+                <a href="{{ route('collections.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">Collections →</a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
+                        <tr>
+                            <th class="px-5 py-3">Loan #</th>
+                            <th class="px-5 py-3">Customer</th>
+                            <th class="px-5 py-3 text-center">Due Date</th>
+                            <th class="px-5 py-3 text-right">Balance</th>
+                            <th class="px-5 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($upcomingDueLoans as $loan)
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-5 py-3.5 font-mono font-semibold text-blue-600">
+                                    <a href="{{ route('loans.show', $loan) }}">{{ $loan->loan_number }}</a>
+                                </td>
+                                <td class="px-5 py-3.5 font-medium text-slate-900">{{ $loan->customer->full_name }}</td>
+                                <td class="px-5 py-3.5 text-center font-bold text-slate-700">{{ $loan->maturity_date ? $loan->maturity_date->format('d M Y') : 'Month-End' }}</td>
+                                <td class="px-5 py-3.5 text-right font-extrabold text-amber-600">GHS {{ number_format($loan->outstanding_balance, 2) }}</td>
+                                <td class="px-5 py-3.5 text-right">
+                                    <a href="{{ route('payments.create', $loan) }}" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg">+ Pay</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-5 py-8 text-center text-slate-400">No upcoming loans due this month.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Priority Overdue Loans --}}
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base">Priority Overdue Action Queue</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Overdue loans with highest outstanding balances</p>
+                </div>
+                <a href="{{ route('collections.index') }}" class="text-xs font-semibold text-red-600 hover:text-red-700">View collections →</a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
+                        <tr>
+                            <th class="px-5 py-3">Loan #</th>
+                            <th class="px-5 py-3">Customer</th>
+                            <th class="px-5 py-3 text-right">Outstanding</th>
+                            <th class="px-5 py-3 text-center">Status</th>
+                            <th class="px-5 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($priorityOverdueLoans as $loan)
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-5 py-3.5 font-mono font-semibold text-blue-600">
+                                    <a href="{{ route('collections.show', $loan) }}">{{ $loan->loan_number }}</a>
+                                </td>
+                                <td class="px-5 py-3.5 font-medium text-slate-900">{{ $loan->customer->full_name }}</td>
+                                <td class="px-5 py-3.5 text-right font-extrabold text-red-600">GHS {{ number_format($loan->outstanding_balance, 2) }}</td>
+                                <td class="px-5 py-3.5 text-center">
+                                    <x-status-badge :status="$loan->status" />
+                                </td>
+                                <td class="px-5 py-3.5 text-right">
+                                    <a href="{{ route('collections.show', $loan) }}" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-semibold rounded-lg">Collect</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-5 py-8 text-center text-slate-400">No overdue loans found.</td>
                             </tr>
                         @endforelse
                     </tbody>
