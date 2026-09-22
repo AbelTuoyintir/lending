@@ -14,8 +14,8 @@ class TransactionController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('transaction_number', 'like', "%{$search}%")
-                      ->orWhere('reference', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('reference', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             })
             ->when($request->type, function ($query, $type) {
