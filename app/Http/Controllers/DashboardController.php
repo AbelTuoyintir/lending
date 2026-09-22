@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\Payment;
-use App\Models\LoanRepayment;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -81,6 +79,20 @@ class DashboardController extends Controller
             )
             ->sum('amount');
 
+        $upcomingDueLoans = Loan::with('customer')
+            ->whereIn('status', ['disbursed', 'active', 'partially_paid'])
+            ->where('due_date', '>=', now())
+            ->where('due_date', '<=', now()->endOfMonth())
+            ->orderBy('due_date')
+            ->limit(5)
+            ->get();
+
+        $overdueLoansList = Loan::with('customer')
+            ->whereIn('status', ['overdue', 'defaulted'])
+            ->orderByDesc('outstanding_balance')
+            ->limit(5)
+            ->get();
+
         $recentLoans = Loan::with('customer')
             ->latest()
             ->limit(10)
@@ -88,7 +100,7 @@ class DashboardController extends Controller
 
         $recentPayments = Payment::with([
             'customer',
-            'loan'
+            'loan',
         ])
             ->where('status', 'completed')
             ->latest('payment_date')
@@ -107,6 +119,8 @@ class DashboardController extends Controller
             'defaultedLoans',
             'todayPayments',
             'monthPayments',
+            'upcomingDueLoans',
+            'overdueLoansList',
             'recentLoans',
             'recentPayments'
         ));

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('financial_transactions')) {
+        if (! Schema::hasTable('financial_transactions')) {
             Schema::create('financial_transactions', function (Blueprint $table) {
                 $table->id();
 
@@ -37,7 +37,7 @@ return new class extends Migration
                     'refund',
                     'deposit',
                     'withdrawal',
-                    'adjustment'
+                    'adjustment',
                 ]);
 
                 $table->decimal('debit', 15, 2)->default(0);

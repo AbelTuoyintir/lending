@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Loan;
-use App\Models\Payment;
 use App\Models\Customer;
+use App\Models\Loan;
 use App\Models\LoanInterestCycle;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class ReportsController extends Controller
@@ -32,33 +32,30 @@ class ReportsController extends Controller
     {
         $loans = Loan::with([
             'customer',
-            'loanProduct'
+            'loanProduct',
         ])
             ->when(
                 $request->from,
-                fn ($query, $from) =>
-                    $query->whereDate(
-                        'loan_date',
-                        '>=',
-                        $from
-                    )
+                fn ($query, $from) => $query->whereDate(
+                    'loan_date',
+                    '>=',
+                    $from
+                )
             )
             ->when(
                 $request->to,
-                fn ($query, $to) =>
-                    $query->whereDate(
-                        'loan_date',
-                        '<=',
-                        $to
-                    )
+                fn ($query, $to) => $query->whereDate(
+                    'loan_date',
+                    '<=',
+                    $to
+                )
             )
             ->when(
                 $request->status,
-                fn ($query, $status) =>
-                    $query->where(
-                        'status',
-                        $status
-                    )
+                fn ($query, $status) => $query->where(
+                    'status',
+                    $status
+                )
             )
             ->latest('loan_date')
             ->paginate(50)
@@ -74,7 +71,7 @@ class ReportsController extends Controller
     {
         $payments = Payment::with([
             'customer',
-            'loan'
+            'loan',
         ])
             ->where(
                 'status',
@@ -82,21 +79,19 @@ class ReportsController extends Controller
             )
             ->when(
                 $request->from,
-                fn ($query, $from) =>
-                    $query->whereDate(
-                        'payment_date',
-                        '>=',
-                        $from
-                    )
+                fn ($query, $from) => $query->whereDate(
+                    'payment_date',
+                    '>=',
+                    $from
+                )
             )
             ->when(
                 $request->to,
-                fn ($query, $to) =>
-                    $query->whereDate(
-                        'payment_date',
-                        '<=',
-                        $to
-                    )
+                fn ($query, $to) => $query->whereDate(
+                    'payment_date',
+                    '<=',
+                    $to
+                )
             )
             ->latest('payment_date')
             ->paginate(50)
