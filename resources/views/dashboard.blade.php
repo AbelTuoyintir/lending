@@ -80,7 +80,7 @@
 
             {{-- 6. Total Interest Generated --}}
             @php
-                $totalInterest = \App\Models\Loan::sum('interest_amount') + \App\Models\LoanInterestCycle::sum('interest_charged');
+                $totalInterest = \App\Models\Loan::sum('interest_amount') + \App\Models\LoanInterestCycle::sum('interest_amount');
             @endphp
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Interest Generated</p>
