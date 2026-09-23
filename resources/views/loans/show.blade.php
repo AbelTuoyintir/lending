@@ -112,7 +112,7 @@
         </div>
 
         @php
-            $accumulatedCompound = $loan->interestCycles->sum('interest_charged');
+            $accumulatedCompound = $loan->interestCycles->sum('interest_amount');
         @endphp
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
             <p class="text-[10px] font-bold uppercase text-slate-400">Compound Interest</p>
@@ -161,10 +161,10 @@
 
                     @forelse($loan->interestCycles as $cycle)
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-4 py-3.5 font-semibold text-slate-800">{{ $cycle->year_month }}</td>
+                            <td class="px-4 py-3.5 font-semibold text-slate-800">{{ $cycle->cycle_date ? $cycle->cycle_date->format('F Y') : 'Cycle ' . $cycle->cycle_number }}</td>
                             <td class="px-4 py-3.5 text-right text-slate-700">GHS {{ number_format($cycle->opening_balance, 2) }}</td>
                             <td class="px-4 py-3.5 text-center font-semibold text-purple-600">{{ number_format($cycle->interest_rate, 0) }}%</td>
-                            <td class="px-4 py-3.5 text-right font-bold text-purple-600">+ GHS {{ number_format($cycle->interest_charged, 2) }}</td>
+                            <td class="px-4 py-3.5 text-right font-bold text-purple-600">+ GHS {{ number_format($cycle->interest_amount, 2) }}</td>
                             <td class="px-4 py-3.5 text-right font-bold text-emerald-600">- GHS {{ number_format($cycle->payment_amount, 2) }}</td>
                             <td class="px-4 py-3.5 text-right font-bold text-amber-600">GHS {{ number_format($cycle->closing_balance, 2) }}</td>
                             <td class="px-4 py-3.5 text-center">

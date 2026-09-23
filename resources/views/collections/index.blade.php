@@ -22,7 +22,7 @@
 
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Compound Interest Applied</p>
-            <h3 class="text-lg font-bold text-purple-600 mt-1">GHS {{ number_format(\App\Models\LoanInterestCycle::sum('interest_charged'), 2) }}</h3>
+            <h3 class="text-lg font-bold text-purple-600 mt-1">GHS {{ number_format(\App\Models\LoanInterestCycle::sum('interest_amount'), 2) }}</h3>
             <p class="text-xs text-purple-600/80 mt-1">30% compounding on balance</p>
         </div>
 

@@ -64,9 +64,9 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($loan->interestCycles as $cycle)
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-4 py-3.5 font-bold text-slate-900">{{ $cycle->year_month }}</td>
+                            <td class="px-4 py-3.5 font-bold text-slate-900">{{ $cycle->cycle_date ? $cycle->cycle_date->format('F Y') : 'Cycle ' . $cycle->cycle_number }}</td>
                             <td class="px-4 py-3.5 text-right">GHS {{ number_format($cycle->opening_balance, 2) }}</td>
-                            <td class="px-4 py-3.5 text-right font-bold text-purple-600">+ GHS {{ number_format($cycle->interest_charged, 2) }}</td>
+                            <td class="px-4 py-3.5 text-right font-bold text-purple-600">+ GHS {{ number_format($cycle->interest_amount, 2) }}</td>
                             <td class="px-4 py-3.5 text-right font-bold text-emerald-600">- GHS {{ number_format($cycle->payment_amount, 2) }}</td>
                             <td class="px-4 py-3.5 text-right font-bold text-red-600">GHS {{ number_format($cycle->closing_balance, 2) }}</td>
                         </tr>
