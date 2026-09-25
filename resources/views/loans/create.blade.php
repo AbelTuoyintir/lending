@@ -10,7 +10,7 @@
         <div>
             <a href="{{ route('loans.index') }}" class="text-xs text-slate-500 hover:text-slate-800">← Back to Lendings</a>
             <h1 class="text-2xl font-bold text-slate-900 mt-1">Issue New Administrative Lending</h1>
-            <p class="text-xs text-slate-500">Repayment is aligned with calendar month-end. Default interest rate is 30%.</p>
+            <p class="text-xs text-slate-500">Repayment is aligned with calendar month-end. Default initial interest rate is 30%.</p>
         </div>
     </div>
 
@@ -56,6 +56,9 @@
                     <div>Phone: <span class="font-semibold text-slate-900" x-text="selectedCustomer.phone"></span></div>
                     <div>Current Active Balance: <span class="font-bold text-amber-600">GHS <span x-text="formatMoney(selectedCustomer.outstanding)"></span></span></div>
                 </div>
+                <div x-show="selectedCustomer.status === 'blacklisted'" class="p-2 bg-red-100 text-red-800 font-bold rounded-lg text-xs">
+                    ⚠️ Blacklisted customers are prohibited from receiving new loan disbursements.
+                </div>
             </div>
         </div>
 
@@ -68,48 +71,53 @@
                 </h2>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Product *</label>
-                    <select name="loan_product_id" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+                    <label class="block font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Product *</label>
+                    <select name="loan_product_id" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 bg-white">
                         @foreach($loanProducts as $product)
                             <option value="{{ $product->id }}" @selected(old('loan_product_id') == $product->id)>
-                                {{ $product->name }} ({{ number_format($product->interest_rate, 2) }}% Interest)
+                                {{ $product->name }} ({{ number_format($product->interest_rate, 0) }}% Interest)
                             </option>
                         @endforeach
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Principal Amount (GHS) *</label>
-                    <input type="number" step="0.01" name="principal_amount" x-model.number="principal" @input="calculate()" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. 1000.00">
+                    <label class="block font-bold uppercase tracking-wider text-slate-600 mb-1.5">Principal Amount (GHS) *</label>
+                    <input type="number" step="0.01" name="principal_amount" x-model.number="principal" @input="calculate()" min="1" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500" placeholder="e.g. 1000.00">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Date *</label>
-                    <input type="date" name="loan_date" x-model="loanDate" @change="calculateDueDate()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500">
+                    <label class="block font-bold uppercase tracking-wider text-slate-600 mb-1.5">Interest Rate (%) *</label>
+                    <input type="number" step="0.01" name="interest_rate_display" value="30.00" readonly class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold" title="Default rate: 30%">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Duration (Months) *</label>
-                    <input type="number" name="duration" value="1" min="1" max="12" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500">
+                    <label class="block font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lending Date *</label>
+                    <input type="date" name="loan_date" x-model="loanDate" @change="calculateDueDate()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold uppercase tracking-wider text-slate-600 mb-1.5">Repayment Month / Duration (Months) *</label>
+                    <input type="number" name="duration" value="1" min="1" max="12" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Administrative Notes</label>
-                <textarea name="notes" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Purpose of the money requested, collateral details, or approval remarks..."></textarea>
+                <textarea name="notes" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500" placeholder="Purpose of the money requested, collateral details, or approval remarks..."></textarea>
             </div>
         </div>
 
-        {{-- Step 3: Live Financial Breakdown Preview --}}
+        {{-- Step 3: Live Financial Calculation Breakdown --}}
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-xl space-y-4">
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <h3 class="font-bold text-white text-base flex items-center gap-2">
                     <span class="w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">3</span>
-                    Live Financial Calculation Summary
+                    Live Financial Calculation Breakdown
                 </h3>
-                <span class="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full font-mono font-bold">Standard 30% Interest</span>
+                <span class="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full font-mono font-bold">Default 30% Interest</span>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
@@ -132,17 +140,21 @@
             </div>
 
             <div class="p-3 bg-white/5 rounded-xl text-[11px] text-slate-300 leading-relaxed border border-white/10">
-                <strong>Business Repayment Rule:</strong> Repayment is strictly due at the <u>end of the calendar month</u>. If unpaid by month-end, a 30% compound interest applies to the remaining outstanding balance for subsequent periods.
+                <strong>Business Repayment Rule:</strong> The loan is <u>not due 30 days after disbursement</u>. Repayment is strictly due at the <strong>end of the calendar month</strong>. If unpaid by month-end, a 30% compound interest applies to the remaining balance for subsequent periods.
             </div>
         </div>
 
         {{-- Action Buttons --}}
         <div class="flex items-center justify-end gap-3">
             <a href="{{ route('loans.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</a>
-            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition">
-                Create & Save Loan
+            <button type="button" @click="confirmLoanCreation('pending')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition">
+                Save as Pending
+            </button>
+            <button type="button" @click="confirmLoanCreation('disburse')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition">
+                Approve & Disburse
             </button>
         </div>
+        <input type="hidden" name="disburse_immediately" id="disburse_immediately" value="0">
     </form>
 </div>
 @endsection
@@ -190,7 +202,6 @@ function loanCalculator() {
         calculateDueDate() {
             if (!this.loanDate) return;
             const d = new Date(this.loanDate);
-            // End of calendar month calculation
             const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0);
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             this.dueDateFormatted = endOfMonth.toLocaleDateString('en-GB', options);
@@ -198,6 +209,42 @@ function loanCalculator() {
 
         formatMoney(amount) {
             return (parseFloat(amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        },
+
+        confirmLoanCreation(type) {
+            if (!this.selectedCustomerId) {
+                Swal.fire('Customer Required', 'Please select a customer first.', 'warning');
+                return;
+            }
+
+            if (this.selectedCustomer.status === 'blacklisted') {
+                Swal.fire('Prohibited Action', 'Cannot create a loan for a blacklisted customer.', 'error');
+                return;
+            }
+
+            const isDisburse = type === 'disburse';
+            document.getElementById('disburse_immediately').value = isDisburse ? '1' : '0';
+
+            Swal.fire({
+                title: isDisburse ? 'Approve & Disburse Loan?' : 'Save Loan Application?',
+                html: `
+                    <div class="text-left text-xs space-y-2">
+                        <p><strong>Customer:</strong> ${this.selectedCustomer.name}</p>
+                        <p><strong>Principal:</strong> GHS ${this.formatMoney(this.principal)}</p>
+                        <p><strong>Initial Interest (30%):</strong> GHS ${this.formatMoney(this.interest)}</p>
+                        <p><strong>Total Payable:</strong> GHS ${this.formatMoney(this.totalPayable)}</p>
+                        <p><strong>Due Date:</strong> ${this.dueDateFormatted}</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: isDisburse ? 'Approve & Disburse' : 'Save as Pending',
+                confirmButtonColor: '#2563eb'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('loanForm').submit();
+                }
+            });
         }
     }
 }

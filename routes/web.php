@@ -121,6 +121,11 @@ Route::middleware('auth')->group(function () {
         [LoanController::class, 'cancel']
     )->name('loans.cancel');
 
+    Route::post(
+        '/loans/{loan}/default',
+        [LoanController::class, 'markDefaulted']
+    )->name('loans.default');
+
     /*
     |--------------------------------------------------------------------------
     | Payments

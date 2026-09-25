@@ -18,29 +18,54 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payments = Payment::query()
+        if ($request->has('export') && $request->export === 'csv') {
+            return $this->exportCsv($request);
+        }
+
+        $query = Payment::query()
             ->with(['customer', 'loan'])
+            ->where('status', 'completed')
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
-                    $query
-                        ->where('payment_number', 'like', "%{$search}%")
+                    $query->where('payment_number', 'like', "%{$search}%")
                         ->orWhere('reference', 'like', "%{$search}%")
                         ->orWhereHas('customer', function ($query) use ($search) {
-                            $query
-                                ->where('first_name', 'like', "%{$search}%")
+                            $query->where('first_name', 'like', "%{$search}%")
                                 ->orWhere('last_name', 'like', "%{$search}%")
                                 ->orWhere('phone', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('loan', function ($query) use ($search) {
+                            $query->where('loan_number', 'like', "%{$search}%");
                         });
                 });
             })
             ->when($request->payment_method, function ($query, $paymentMethod) {
                 $query->where('payment_method', $paymentMethod);
             })
-            ->latest('payment_date')
-            ->paginate(20)
-            ->withQueryString();
+            ->when($request->date_from, function ($query, $dateFrom) {
+                $query->whereDate('payment_date', '>=', $dateFrom);
+            })
+            ->when($request->date_to, function ($query, $dateTo) {
+                $query->whereDate('payment_date', '<=', $dateTo);
+            })
+            ->when($request->customer_id, function ($query, $customerId) {
+                $query->where('customer_id', $customerId);
+            });
 
-        return view('payments.index', compact('payments'));
+        $totalPaymentsCount = (clone $query)->count();
+        $todayCollections = Payment::where('status', 'completed')->whereDate('payment_date', today())->sum('amount');
+        $thisMonthCollections = Payment::where('status', 'completed')->whereMonth('payment_date', now()->month)->whereYear('payment_date', now()->year)->sum('amount');
+        $totalCollected = Payment::where('status', 'completed')->sum('amount');
+
+        $payments = $query->latest('payment_date')->paginate(20)->withQueryString();
+
+        return view('payments.index', compact(
+            'payments',
+            'totalPaymentsCount',
+            'todayCollections',
+            'thisMonthCollections',
+            'totalCollected'
+        ));
     }
 
     /**
@@ -48,9 +73,19 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->load(['customer', 'loan']);
+        $payment->load(['customer', 'loan', 'allocations']);
 
-        return view('payments.show', compact('payment'));
+        $principalPortion = $payment->allocations->where('type', 'principal')->sum('amount');
+        $interestPortion = $payment->allocations->where('type', 'interest')->sum('amount');
+        $compoundInterestPortion = $payment->allocations->where('type', 'compound_interest')->sum('amount');
+
+        if ($payment->allocations->isEmpty()) {
+            $principalPortion = $payment->amount;
+            $interestPortion = 0;
+            $compoundInterestPortion = 0;
+        }
+
+        return view('payments.show', compact('payment', 'principalPortion', 'interestPortion', 'compoundInterestPortion'));
     }
 
     /**
@@ -118,54 +153,20 @@ class PaymentController extends Controller
     public function store(Request $request, Loan $loan)
     {
         $validated = $request->validate([
-            'amount' => [
-                'required',
-                'numeric',
-                'min:0.01',
-            ],
-
-            'payment_method' => [
-                'required',
-                'in:cash,mobile_money,bank_transfer,card,other',
-            ],
-
-            'reference' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:payments,reference',
-            ],
-
-            'payment_date' => [
-                'required',
-                'date',
-            ],
-
-            'financial_account_id' => [
-                'nullable',
-                'exists:financial_accounts,id',
-            ],
-
-            'notes' => [
-                'nullable',
-                'string',
-            ],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'payment_method' => ['required', 'in:cash,mobile_money,bank_transfer,card,other'],
+            'reference' => ['required', 'string', 'max:255', 'unique:payments,reference'],
+            'payment_date' => ['required', 'date'],
+            'financial_account_id' => ['nullable', 'exists:financial_accounts,id'],
+            'notes' => ['nullable', 'string'],
         ]);
 
         try {
-            $payment = $this->paymentService->recordPayment(
-                $loan,
-                $validated
-            );
+            $payment = $this->paymentService->recordPayment($loan, $validated);
 
             return redirect()
-                ->route('loans.show', $loan)
-                ->with(
-                    'success',
-                    'Payment of GHS '.
-                    number_format($payment->amount, 2).
-                    ' recorded successfully.'
-                );
+                ->route('payments.show', $payment)
+                ->with('success', 'Payment of GHS '.number_format($payment->amount, 2).' recorded successfully.');
         } catch (\Throwable $e) {
             return back()
                 ->withInput()
@@ -179,28 +180,58 @@ class PaymentController extends Controller
     public function reverse(Request $request, $payment)
     {
         $validated = $request->validate([
-            'reason' => [
-                'required',
-                'string',
-                'min:5',
-            ],
+            'reason' => ['required', 'string', 'min:5'],
         ]);
 
         try {
-            $this->paymentService->reversePayment(
-                $payment,
-                $validated['reason']
-            );
+            $this->paymentService->reversePayment($payment, $validated['reason']);
 
-            return back()->with(
-                'success',
-                'Payment reversed successfully.'
-            );
+            return back()->with('success', 'Payment reversed successfully.');
         } catch (\Throwable $e) {
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+            return back()->with('error', $e->getMessage());
         }
+    }
+
+    private function exportCsv(Request $request)
+    {
+        $payments = Payment::with(['customer', 'loan'])->where('status', 'completed')->get();
+
+        $filename = 'payments_export_'.date('Y-m-d_H-i-s').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($payments) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, [
+                'Payment Number',
+                'Customer',
+                'Loan Number',
+                'Amount (GHS)',
+                'Payment Method',
+                'Reference',
+                'Payment Date',
+                'Status',
+            ]);
+
+            foreach ($payments as $p) {
+                fputcsv($file, [
+                    $p->payment_number,
+                    $p->customer->full_name ?? '',
+                    $p->loan->loan_number ?? '',
+                    $p->amount,
+                    $p->payment_method,
+                    $p->reference,
+                    $p->payment_date->format('Y-m-d'),
+                    $p->status,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
