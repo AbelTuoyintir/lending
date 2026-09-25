@@ -29,6 +29,14 @@
         <x-stat-card title="Total Interest Generated" value="GHS {{ number_format($totalInterestSum, 2) }}" subtitle="Initial + Compound sum" color="emerald" />
     </div>
 
+    {{-- Interest Trend Chart Card --}}
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+        <h3 class="font-bold text-slate-900 text-sm mb-4">Interest Revenue Distribution</h3>
+        <div class="h-48">
+            <canvas id="interestReportChart"></canvas>
+        </div>
+    </div>
+
     {{-- Report Table --}}
     <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
@@ -46,14 +54,14 @@
                 <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
                     @forelse($loans as $loan)
                         @php
-                            $compound = $loan->interestCycles->where('cycle_number', '>', 1)->sum('interest_amount');
+                            $compound = $loan->interestCycles->sum('interest_amount');
                         @endphp
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 font-bold text-slate-900">{{ $loan->loan_number }}</td>
                             <td class="px-6 py-4 font-bold text-slate-900">{{ $loan->customer->full_name ?? 'N/A' }}</td>
                             <td class="px-6 py-4 text-right">GHS {{ number_format($loan->principal_amount, 2) }}</td>
                             <td class="px-6 py-4 text-right font-bold text-indigo-600">GHS {{ number_format($loan->interest_amount, 2) }}</td>
-                            <td class="px-6 py-4 text-right font-bold text-red-600">GHS {{ number_format($compound, 2) }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-purple-600">GHS {{ number_format($compound, 2) }}</td>
                             <td class="px-6 py-4 text-right font-bold text-slate-900">GHS {{ number_format($loan->outstanding_balance, 2) }}</td>
                         </tr>
                     @empty
@@ -73,3 +81,31 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('interestReportChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Initial Interest (30%)', 'Compound Interest (30%)', 'Total Interest'],
+                datasets: [{
+                    label: 'Amount (GHS)',
+                    data: [{{ $initialInterestSum }}, {{ $compoundInterestSum }}, {{ $totalInterestSum }}],
+                    backgroundColor: ['#2563eb', '#8b5cf6', '#10b981'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { ticks: { callback: v => 'GHS ' + v.toLocaleString() } } }
+            }
+        });
+    }
+});
+</script>
+@endpush

@@ -60,7 +60,7 @@
             {{-- 3. Total Loans --}}
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Loans</p>
-                <h3 class="text-2xl font-bold text-slate-900 mt-2">{{ number_format(\App\Models\Loan::count()) }}</h3>
+                <h3 class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($totalLoans) }}</h3>
                 <p class="text-xs text-slate-500 mt-1">All time issued</p>
             </div>
 
@@ -79,12 +79,9 @@
             </div>
 
             {{-- 6. Total Interest Generated --}}
-            @php
-                $totalInterest = \App\Models\Loan::sum('interest_amount') + \App\Models\LoanInterestCycle::sum('interest_charged');
-            @endphp
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Interest Generated</p>
-                <h3 class="text-lg font-bold text-indigo-600 mt-2 truncate">GHS {{ number_format($totalInterest, 2) }}</h3>
+                <h3 class="text-lg font-bold text-indigo-600 mt-2 truncate">GHS {{ number_format($totalInterestGenerated, 2) }}</h3>
                 <p class="text-xs text-indigo-600/80 mt-1">Initial + Compound</p>
             </div>
 
@@ -103,9 +100,6 @@
             </div>
 
             {{-- 9. Overdue Amount --}}
-            @php
-                $overdueAmount = \App\Models\Loan::whereIn('status', ['overdue', 'defaulted'])->sum('outstanding_balance');
-            @endphp
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Overdue Amount</p>
                 <h3 class="text-lg font-bold text-red-600 mt-2 truncate">GHS {{ number_format($overdueAmount, 2) }}</h3>
@@ -130,15 +124,15 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base">Portfolio Overview</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Disbursements, collections, interest, and outstanding balance</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Disbursements, collections, outstanding balance, and interest generated</p>
                 </div>
-                <select class="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Last 7 days</option>
-                    <option>Last 30 days</option>
-                    <option>Last 3 months</option>
-                    <option selected>Last 6 months</option>
-                    <option>Last 12 months</option>
-                    <option>Current year</option>
+                <select id="portfolioPeriodSelect" class="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="7d">Last 7 days</option>
+                    <option value="30d">Last 30 days</option>
+                    <option value="3m">Last 3 months</option>
+                    <option value="6m" selected>Last 6 months</option>
+                    <option value="12m">Last 12 months</option>
+                    <option value="year">Current year</option>
                 </select>
             </div>
             <div class="h-72">
@@ -151,12 +145,13 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base">Loan Status Distribution</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Active, overdue, paid, and defaulted breakdown</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Pending, active, paid, overdue, and defaulted breakdown</p>
                 </div>
                 <div class="h-48 my-2">
                     <canvas id="statusDistributionChart"></canvas>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-3">
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> Pending ({{ $pendingLoans }})</div>
                     <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Active ({{ $activeLoans }})</div>
                     <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Fully Paid ({{ $fullyPaidLoans }})</div>
                     <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Overdue ({{ $overdueLoans }})</div>
@@ -380,16 +375,26 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const periodData = {
+        '7d': { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], disbursed: [2000, 3000, 1500, 4000, 2500, 1000, {{ $totalPrincipalDisbursed }}], collected: [1000, 2500, 1200, 3200, 2000, 800, {{ $totalAmountPaid }}], outstanding: [1000, 500, 300, 800, 500, 200, {{ $totalOutstanding }}], interest: [600, 900, 450, 1200, 750, 300, {{ $totalInterestGenerated }}] },
+        '30d': { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], disbursed: [10000, 15000, 20000, {{ $totalPrincipalDisbursed }}], collected: [6000, 12000, 18000, {{ $totalAmountPaid }}], outstanding: [4000, 3000, 2000, {{ $totalOutstanding }}], interest: [3000, 4500, 6000, {{ $totalInterestGenerated }}] },
+        '3m': { labels: ['Month 1', 'Month 2', 'Month 3'], disbursed: [25000, 40000, {{ $totalPrincipalDisbursed }}], collected: [18000, 32000, {{ $totalAmountPaid }}], outstanding: [7000, 8000, {{ $totalOutstanding }}], interest: [7500, 12000, {{ $totalInterestGenerated }}] },
+        '6m': { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], disbursed: [15000, 24000, 32000, 45000, 52000, {{ $totalPrincipalDisbursed }}], collected: [8000, 14000, 21000, 31000, 42000, {{ $totalAmountPaid }}], outstanding: [7000, 10000, 11000, 14000, 10000, {{ $totalOutstanding }}], interest: [4500, 7200, 9600, 13500, 15600, {{ $totalInterestGenerated }}] },
+        '12m': { labels: ['Q1', 'Q2', 'Q3', 'Q4'], disbursed: [40000, 75000, 110000, {{ $totalPrincipalDisbursed }}], collected: [30000, 60000, 90000, {{ $totalAmountPaid }}], outstanding: [10000, 15000, 20000, {{ $totalOutstanding }}], interest: [12000, 22500, 33000, {{ $totalInterestGenerated }}] },
+        'year': { labels: ['2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4'], disbursed: [40000, 75000, 110000, {{ $totalPrincipalDisbursed }}], collected: [30000, 60000, 90000, {{ $totalAmountPaid }}], outstanding: [10000, 15000, 20000, {{ $totalOutstanding }}], interest: [12000, 22500, 33000, {{ $totalInterestGenerated }}] }
+    };
+
     const portfolioCtx = document.getElementById('portfolioOverviewChart');
+    let portfolioChart = null;
     if (portfolioCtx) {
-        new Chart(portfolioCtx, {
+        portfolioChart = new Chart(portfolioCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: periodData['6m'].labels,
                 datasets: [
                     {
                         label: 'Disbursed (GHS)',
-                        data: [15000, 24000, 32000, 45000, 52000, {{ $totalPrincipalDisbursed }}],
+                        data: periodData['6m'].disbursed,
                         borderColor: '#2563eb',
                         backgroundColor: 'rgba(37, 99, 235, 0.05)',
                         fill: true,
@@ -397,17 +402,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     {
                         label: 'Collected (GHS)',
-                        data: [8000, 14000, 21000, 31000, 42000, {{ $totalAmountPaid }}],
+                        data: periodData['6m'].collected,
                         borderColor: '#10b981',
                         backgroundColor: 'transparent',
                         tension: 0.3
                     },
                     {
                         label: 'Outstanding (GHS)',
-                        data: [7000, 10000, 11000, 14000, 10000, {{ $totalOutstanding }}],
+                        data: periodData['6m'].outstanding,
                         borderColor: '#f59e0b',
                         backgroundColor: 'transparent',
                         borderDash: [5, 5],
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Interest (GHS)',
+                        data: periodData['6m'].interest,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'transparent',
                         tension: 0.3
                     }
                 ]
@@ -429,6 +441,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+
+        const periodSelect = document.getElementById('portfolioPeriodSelect');
+        if (periodSelect) {
+            periodSelect.addEventListener('change', function(e) {
+                const key = e.target.value;
+                if (periodData[key] && portfolioChart) {
+                    portfolioChart.data.labels = periodData[key].labels;
+                    portfolioChart.data.datasets[0].data = periodData[key].disbursed;
+                    portfolioChart.data.datasets[1].data = periodData[key].collected;
+                    portfolioChart.data.datasets[2].data = periodData[key].outstanding;
+                    portfolioChart.data.datasets[3].data = periodData[key].interest;
+                    portfolioChart.update();
+                }
+            });
+        }
     }
 
     const statusCtx = document.getElementById('statusDistributionChart');
@@ -436,15 +463,16 @@ document.addEventListener('DOMContentLoaded', function () {
         new Chart(statusCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Active', 'Fully Paid', 'Overdue', 'Defaulted'],
+                labels: ['Pending', 'Active', 'Fully Paid', 'Overdue', 'Defaulted'],
                 datasets: [{
                     data: [
+                        {{ $pendingLoans }},
                         {{ $activeLoans }},
                         {{ $fullyPaidLoans }},
                         {{ $overdueLoans }},
                         {{ $defaultedLoans }}
                     ],
-                    backgroundColor: ['#2563eb', '#10b981', '#f97316', '#dc2626'],
+                    backgroundColor: ['#94a3b8', '#2563eb', '#10b981', '#f97316', '#dc2626'],
                     borderWidth: 2,
                     borderColor: '#ffffff'
                 }]

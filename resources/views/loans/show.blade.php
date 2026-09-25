@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Lending ' . $loan->loan_number . ' | FinCore')
-@section('page-title', 'Lending Details')
+@section('page-title', 'Lending Details & Financial Portfolio')
 
 @section('content')
 <div class="space-y-8">
@@ -16,7 +16,7 @@
                 <x-status-badge :status="$loan->status" />
             </div>
             <h1 class="text-2xl font-extrabold text-slate-900 mt-2">
-                Borrower: {{ $loan->customer->full_name }}
+                Borrower: <a href="{{ route('customers.show', $loan->customer) }}" class="hover:text-blue-600">{{ $loan->customer->full_name }}</a>
             </h1>
             <p class="text-xs text-slate-500 mt-1">
                 Loan Issued: <span class="font-semibold text-slate-700">{{ $loan->loan_date ? $loan->loan_date->format('d M Y') : 'N/A' }}</span> •
@@ -57,15 +57,26 @@
                     </select>
                     <input type="hidden" name="disbursement_date" value="{{ date('Y-m-d') }}">
                 </form>
-                @if($financialAccounts->isEmpty())
-                    <span class="text-xs text-amber-600">No active financial account is available for disbursement.</span>
-                @endif
             @endif
 
             @if(in_array($loan->status, ['disbursed', 'active', 'partially_paid', 'overdue']))
                 <a href="{{ route('payments.create', $loan) }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-blue-600/20 transition">
                     + Record Payment
                 </a>
+
+                <button type="button" @click="Swal.fire({
+                    title: 'Mark as Defaulted?',
+                    text: 'Are you sure you want to mark this loan as defaulted? This flags the customer in collection management.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Mark Defaulted',
+                    confirmButtonColor: '#dc2626'
+                }).then((r) => { if (r.isConfirmed) document.getElementById('defaultForm').submit(); })" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl transition">
+                    Mark Defaulted
+                </button>
+                <form id="defaultForm" action="{{ route('loans.default', $loan) }}" method="POST" class="hidden">
+                    @csrf
+                </form>
             @endif
 
             @if(in_array($loan->status, ['pending', 'approved']))
@@ -115,7 +126,7 @@
             $accumulatedCompound = $loan->interestCycles->sum('interest_charged');
         @endphp
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-            <p class="text-[10px] font-bold uppercase text-slate-400">Compound Interest</p>
+            <p class="text-[10px] font-bold uppercase text-slate-400">Accumulated Compound</p>
             <p class="text-lg font-extrabold text-purple-600 mt-1">GHS {{ number_format($accumulatedCompound, 2) }}</p>
         </div>
     </div>
@@ -124,21 +135,21 @@
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-                <h3 class="font-bold text-slate-900 text-base">Monthly Compound Interest Calculation Timeline</h3>
-                <p class="text-xs text-slate-500 mt-0.5">30% compound interest applied to remaining balance at month-end rollover.</p>
+                <h3 class="font-bold text-slate-900 text-base">Monthly Interest Calculation Timeline</h3>
+                <p class="text-xs text-slate-500 mt-0.5">30% compound interest charged on remaining balance at calendar month-end rollover.</p>
             </div>
-            <span class="text-xs bg-slate-100 font-mono text-slate-600 px-3 py-1 rounded-full font-semibold">Rule: 30% of Remaining Balance</span>
+            <span class="text-xs bg-slate-100 font-mono text-slate-600 px-3 py-1 rounded-full font-semibold">30% Default Compound Rate</span>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
                     <tr>
-                        <th class="px-4 py-3">Calculation Period</th>
+                        <th class="px-4 py-3">Period</th>
                         <th class="px-4 py-3 text-right">Opening Balance</th>
                         <th class="px-4 py-3 text-center">Interest Rate</th>
                         <th class="px-4 py-3 text-right">Interest Charged</th>
-                        <th class="px-4 py-3 text-right">Payments</th>
+                        <th class="px-4 py-3 text-right">Payment</th>
                         <th class="px-4 py-3 text-right">Closing Balance</th>
                         <th class="px-4 py-3 text-center">Status</th>
                     </tr>
