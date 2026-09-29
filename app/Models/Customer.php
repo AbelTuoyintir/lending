@@ -18,16 +18,29 @@ class Customer extends Model
         'phone',
         'alternate_phone',
         'email',
+        'date_of_birth',
+        'gender',
+        'id_type',
+        'id_number',
         'address',
+        'city',
+        'region',
+        'digital_address',
         'occupation',
         'employer',
+        'employment_address',
         'monthly_income',
+        'emergency_contact_name',
+        'emergency_contact_relationship',
+        'emergency_contact_phone',
+        'emergency_contact_address',
         'status',
         'notes',
     ];
 
     protected $casts = [
         'monthly_income' => 'decimal:2',
+        'date_of_birth' => 'date',
     ];
 
     /*
