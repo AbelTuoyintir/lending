@@ -23,13 +23,34 @@
     </div>
 
     {{-- Overview Stats Grid --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
         {{-- Outstanding Balance Card --}}
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-amber-500">
             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Outstanding Balance</span>
             <div class="text-2xl font-black text-amber-600">GHS {{ number_format($totalOutstanding, 2) }}</div>
             <p class="text-[11px] text-slate-500">Remaining total payable balance</p>
+        </div>
+
+        {{-- Total Borrowed Card --}}
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-blue-600">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Amount Borrowed</span>
+            <div class="text-2xl font-black text-slate-900">GHS {{ number_format($totalBorrowed, 2) }}</div>
+            <p class="text-[11px] text-slate-500">Total principal capital requested</p>
+        </div>
+
+        {{-- Total Paid Card --}}
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-emerald-500">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Amount Paid</span>
+            <div class="text-2xl font-black text-emerald-600">GHS {{ number_format($totalRepaid, 2) }}</div>
+            <p class="text-[11px] text-slate-500">Cumulative repayments completed</p>
+        </div>
+
+        {{-- Current Interest Card --}}
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-purple-500">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Current Interest</span>
+            <div class="text-2xl font-black text-purple-600">GHS {{ number_format($totalInterest, 2) }}</div>
+            <p class="text-[11px] text-slate-500">Total interest charges accrued</p>
         </div>
 
         {{-- Next Due Date Card --}}
@@ -41,16 +62,9 @@
             <p class="text-[11px] text-slate-500">Upcoming repayment deadline</p>
         </div>
 
-        {{-- Total Paid Card --}}
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-emerald-500">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Paid</span>
-            <div class="text-2xl font-black text-emerald-600">GHS {{ number_format($totalRepaid, 2) }}</div>
-            <p class="text-[11px] text-slate-500">Cumulative repayments completed</p>
-        </div>
-
         {{-- Active Loans Card --}}
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 border-l-4 border-l-indigo-500">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Active Loans</span>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Number of Active Loans</span>
             <div class="text-2xl font-black text-slate-900">{{ $activeLoansCount }}</div>
             <p class="text-[11px] text-slate-500">Active borrowing facilities</p>
         </div>

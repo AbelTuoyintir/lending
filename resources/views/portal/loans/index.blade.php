@@ -45,40 +45,49 @@
                 <table class="w-full text-left text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold">
                         <tr>
-                            <th class="px-5 py-3.5">Loan Number</th>
-                            <th class="px-5 py-3.5">Product</th>
-                            <th class="px-5 py-3.5 text-right">Principal</th>
-                            <th class="px-5 py-3.5 text-right">Total Payable</th>
-                            <th class="px-5 py-3.5 text-right">Paid</th>
-                            <th class="px-5 py-3.5 text-right">Balance</th>
-                            <th class="px-5 py-3.5 text-center">Status</th>
-                            <th class="px-5 py-3.5 text-right">Actions</th>
+                            <th class="px-4 py-3.5">Loan Number</th>
+                            <th class="px-4 py-3.5 text-right">Principal</th>
+                            <th class="px-4 py-3.5 text-right">Interest</th>
+                            <th class="px-4 py-3.5 text-right">Total Payable</th>
+                            <th class="px-4 py-3.5 text-right">Amount Paid</th>
+                            <th class="px-4 py-3.5 text-right">Outstanding</th>
+                            <th class="px-4 py-3.5 text-center">Loan Date</th>
+                            <th class="px-4 py-3.5 text-center">Due Date</th>
+                            <th class="px-4 py-3.5 text-center">Status</th>
+                            <th class="px-4 py-3.5 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($loans as $loan)
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="px-5 py-4 font-mono font-bold text-slate-900">
+                                <td class="px-4 py-4 font-mono font-bold text-slate-900">
                                     <a href="{{ route('portal.loans.show', $loan) }}" class="hover:text-blue-600 hover:underline">
                                         {{ $loan->loan_number }}
                                     </a>
+                                    <span class="block text-[11px] font-normal text-slate-400">{{ $loan->loanProduct->name ?? 'Standard' }}</span>
                                 </td>
-                                <td class="px-5 py-4 font-medium text-slate-700">
-                                    {{ $loan->loanProduct->name ?? 'Standard Loan' }}
-                                </td>
-                                <td class="px-5 py-4 text-right font-semibold text-slate-900">
+                                <td class="px-4 py-4 text-right font-semibold text-slate-900">
                                     GHS {{ number_format($loan->principal_amount, 2) }}
                                 </td>
-                                <td class="px-5 py-4 text-right font-semibold text-slate-900">
+                                <td class="px-4 py-4 text-right font-medium text-purple-600">
+                                    GHS {{ number_format($loan->interest_amount, 2) }}
+                                </td>
+                                <td class="px-4 py-4 text-right font-semibold text-slate-900">
                                     GHS {{ number_format($loan->total_payable, 2) }}
                                 </td>
-                                <td class="px-5 py-4 text-right font-bold text-emerald-600">
+                                <td class="px-4 py-4 text-right font-bold text-emerald-600">
                                     GHS {{ number_format($loan->amount_paid, 2) }}
                                 </td>
-                                <td class="px-5 py-4 text-right font-extrabold text-amber-600">
+                                <td class="px-4 py-4 text-right font-extrabold text-amber-600">
                                     GHS {{ number_format($loan->outstanding_balance, 2) }}
                                 </td>
-                                <td class="px-5 py-4 text-center">
+                                <td class="px-4 py-4 text-center text-slate-600">
+                                    {{ $loan->loan_date ? \Carbon\Carbon::parse($loan->loan_date)->format('d M Y') : '—' }}
+                                </td>
+                                <td class="px-4 py-4 text-center text-slate-600">
+                                    {{ $loan->maturity_date ? \Carbon\Carbon::parse($loan->maturity_date)->format('d M Y') : '—' }}
+                                </td>
+                                <td class="px-4 py-4 text-center">
                                     @php
                                         $badgeClasses = match($loan->status) {
                                             'active', 'disbursed' => 'bg-blue-50 text-blue-700 border-blue-200',
@@ -94,7 +103,7 @@
                                         {{ str_replace('_', ' ', $loan->status) }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 text-right space-x-2">
+                                <td class="px-4 py-4 text-right space-x-1.5 whitespace-nowrap">
                                     <a href="{{ route('portal.loans.show', $loan) }}" class="inline-block px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition">
                                         View Loan
                                     </a>
