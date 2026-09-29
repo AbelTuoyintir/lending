@@ -64,28 +64,31 @@
             <p class="text-xs text-emerald-600 font-medium">Ghanaian Cedi (GHS)</p>
         </div>
 
-        {{-- Loan Balance Breakdown Table --}}
+        {{-- Payment & Loan Balance Breakdown Table --}}
         <div>
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Loan Financial Impact</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Payment Breakdown & Balance Impact</h4>
             <div class="overflow-x-auto border border-slate-200 rounded-xl">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs font-semibold text-slate-600 uppercase">
                         <tr>
-                            <th class="px-4 py-3">Description</th>
+                            <th class="px-4 py-3">Financial Item</th>
                             <th class="px-4 py-3 text-right">Amount (GHS)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">
+                        @php
+                            $previousBalance = (float) $payment->loan->outstanding_balance + (float) $payment->amount;
+                        @endphp
                         <tr>
-                            <td class="px-4 py-3">Total Loan Payable</td>
-                            <td class="px-4 py-3 text-right font-semibold">GHS {{ number_format($payment->loan->total_payable, 2) }}</td>
+                            <td class="px-4 py-3 font-medium">Previous Balance</td>
+                            <td class="px-4 py-3 text-right font-semibold text-slate-900">GHS {{ number_format($previousBalance, 2) }}</td>
                         </tr>
-                        <tr>
-                            <td class="px-4 py-3">Total Cumulative Paid to Date</td>
-                            <td class="px-4 py-3 text-right font-bold text-emerald-600">GHS {{ number_format($payment->loan->amount_paid, 2) }}</td>
+                        <tr class="bg-emerald-50/40">
+                            <td class="px-4 py-3 font-bold text-emerald-900">Payment Amount</td>
+                            <td class="px-4 py-3 text-right font-black text-emerald-600">- GHS {{ number_format($payment->amount, 2) }}</td>
                         </tr>
                         <tr class="bg-amber-50/50">
-                            <td class="px-4 py-3 font-bold text-amber-900">Remaining Loan Outstanding Balance</td>
+                            <td class="px-4 py-3 font-bold text-amber-900">New Remaining Balance</td>
                             <td class="px-4 py-3 text-right font-extrabold text-amber-700">GHS {{ number_format($payment->loan->outstanding_balance, 2) }}</td>
                         </tr>
                     </tbody>
