@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Customer ' . $customer->customer_number . ' | FinCore')
+@section('title', 'Edit Customer ' . $customer->customer_number . ' | De ferg money')
 @section('page-title', 'Edit Customer Profile')
 
 @section('content')

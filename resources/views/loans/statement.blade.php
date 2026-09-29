@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Statement - {{ $loan->loan_number }} | FinCore</title>
+    <title>Statement - {{ $loan->loan_number }} | De ferg money</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; font-size: 13px; color: #0f172a; margin: 0; padding: 40px; }
         .header { display: flex; justify-content: space-between; border-b: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
@@ -29,7 +29,7 @@
 
     <div class="header">
         <div>
-            <h1 class="title">FinCore</h1>
+            <h1 class="title">De ferg money</h1>
             <p class="subtitle">Administrative Financial & Loan Management System</p>
         </div>
         <div style="text-align: right;">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'System Settings | FinCore')
+@section('title', 'System Settings | De ferg money')
 
 @section('content')
 
@@ -23,7 +23,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">Business Name</label>
-                    <input type="text" name="business_name" value="FinCore Financial Services" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold">
+                    <input type="text" name="business_name" value="De ferg money Financial Services" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold">
                 </div>
 
                 <div>
@@ -35,7 +35,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">Business Email</label>
-                    <input type="email" name="business_email" value="contact@fincore.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold">
+                    <input type="email" name="business_email" value="contact@De ferg money.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold">
                 </div>
 
                 <div>

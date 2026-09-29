@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Administrator Profile | FinCore')
+@section('title', 'Administrator Profile | De ferg money')
 @section('page-title', 'My Profile')
 
 @section('content')

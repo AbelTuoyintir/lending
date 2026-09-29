@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Loan Portfolio Report | FinCore')
+@section('title', 'Loan Portfolio Report | De ferg money')
 
 @section('content')
 

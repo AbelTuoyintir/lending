@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Collection View - ' . $loan->loan_number . ' | FinCore')
+@section('title', 'Collection View - ' . $loan->loan_number . ' | De ferg money')
 @section('page-title', 'Collection Management View')
 
 @section('content')

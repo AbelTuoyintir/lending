@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'System Administrators | FinCore')
+@section('title', 'System Administrators | De ferg money')
 
 @section('content')
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Customer Profile - ' . $customer->full_name . ' | FinCore')
+@section('title', 'Customer Profile - ' . $customer->full_name . ' | De ferg money')
 @section('page-title', 'Customer Financial Profile')
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $loanProduct->name . ' - Product Details | FinCore')
+@section('title', $loanProduct->name . ' - Product Details | De ferg money')
 
 @section('content')
 

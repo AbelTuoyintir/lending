@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Page Not Found | FinCore')
+@section('title', 'Page Not Found | De ferg money')
 
 @section('content')
 <div class="min-h-[70vh] flex items-center justify-center">

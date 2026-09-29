@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Loan ' . $loan->loan_number . ' — FinCore Portal')
+@section('title', 'Loan ' . $loan->loan_number . ' — De ferg money Portal')
 
 @section('content')
 <div class="space-y-6" x-data="{ payAmount: '{{ $loan->outstanding_balance }}', payMode: 'full' }">

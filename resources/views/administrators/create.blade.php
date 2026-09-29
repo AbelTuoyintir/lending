@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add Administrator | FinCore')
+@section('title', 'Add Administrator | De ferg money')
 
 @section('content')
 
@@ -33,7 +33,7 @@
             <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
                 Email Address *
             </label>
-            <input type="email" name="email" value="{{ old('email') }}" required placeholder="admin@fincore.com"
+            <input type="email" name="email" value="{{ old('email') }}" required placeholder="admin@De ferg money.com"
                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition">
         </div>
 

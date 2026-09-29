@@ -8,7 +8,7 @@
                 F
             </div>
             <div>
-                <h1 class="font-bold text-lg tracking-tight text-white leading-none">FinCore</h1>
+                <h1 class="font-bold text-lg tracking-tight text-white leading-none">De ferg money</h1>
                 <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">Loan Management</p>
             </div>
         </a>
@@ -132,7 +132,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg text-white font-bold text-lg">F</div>
                     <div>
-                        <h1 class="font-bold text-lg tracking-tight text-white leading-none">FinCore</h1>
+                        <h1 class="font-bold text-lg tracking-tight text-white leading-none">De ferg money</h1>
                         <p class="text-[10px] text-slate-400 font-medium uppercase mt-1">Loan Management</p>
                     </div>
                 </div>

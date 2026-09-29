@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Loan Agreement ' . $loan->loan_number . ' — FinCore')
+@section('title', 'Loan Agreement ' . $loan->loan_number . ' — De ferg money')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
@@ -20,7 +20,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-8 print:border-0 print:shadow-none print:p-0">
 
         <div class="text-center border-b border-slate-200 pb-6 space-y-2">
-            <div class="font-black text-2xl text-slate-900 tracking-tight">FINCORE LENDING SERVICES</div>
+            <div class="font-black text-2xl text-slate-900 tracking-tight">De ferg money LENDING SERVICES</div>
             <h2 class="text-lg font-bold text-blue-700 uppercase tracking-widest">Formal Lending Agreement & Terms</h2>
             <p class="text-xs text-slate-500 font-mono">Agreement Reference: {{ $loan->loan_number }}</p>
         </div>
@@ -29,7 +29,7 @@
         <div class="grid grid-cols-2 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100 text-xs">
             <div>
                 <h4 class="font-bold text-slate-400 uppercase tracking-wider mb-2">Lender</h4>
-                <p class="font-bold text-slate-900">FinCore Financial Services Ltd.</p>
+                <p class="font-bold text-slate-900">De ferg money Financial Services Ltd.</p>
                 <p class="text-slate-600">Accra, Ghana</p>
             </div>
             <div>
@@ -76,7 +76,7 @@
         <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
             <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">2. Interest Calculation & Compound Rules</h3>
             <p>
-                A default initial interest rate of {{ $loan->interest_rate }}% applies upon disbursement. Repayments align with calendar month-end. In accordance with FinCore lending policies, remaining unpaid balances at calendar month-end incur a {{ $loan->interest_rate }}% monthly compound interest charge calculated on the closing balance.
+                A default initial interest rate of {{ $loan->interest_rate }}% applies upon disbursement. Repayments align with calendar month-end. In accordance with De ferg money lending policies, remaining unpaid balances at calendar month-end incur a {{ $loan->interest_rate }}% monthly compound interest charge calculated on the closing balance.
             </p>
 
             <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mt-4">3. Repayment Policy</h3>
@@ -86,7 +86,7 @@
 
             <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mt-4">4. Digital Acceptance</h3>
             <p>
-                By submitting this loan application electronically via the FinCore User Portal, the Borrower acknowledges full understanding and legal acceptance of all loan conditions herein.
+                By submitting this loan application electronically via the De ferg money User Portal, the Borrower acknowledges full understanding and legal acceptance of all loan conditions herein.
             </p>
         </div>
 
@@ -97,7 +97,7 @@
                 <span class="text-slate-500">Borrower Electronic Acceptance</span>
             </div>
             <div>
-                <div class="border-b border-slate-400 pb-2 mb-2 font-mono font-bold text-blue-700">FinCore Authorized Officer</div>
+                <div class="border-b border-slate-400 pb-2 mb-2 font-mono font-bold text-blue-700">De ferg money Authorized Officer</div>
                 <span class="text-slate-500">Lender Digital Verification</span>
             </div>
         </div>

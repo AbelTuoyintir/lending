@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Help & Support — FinCore Portal')
+@section('title', 'Help & Support — De ferg money Portal')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6" x-data="{ openFaq: null }">

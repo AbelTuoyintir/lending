@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Customer Dashboard — FinCore Lending Portal')
+@section('title', 'Customer Dashboard — De ferg money Lending Portal')
 
 @section('content')
 <div class="space-y-8">

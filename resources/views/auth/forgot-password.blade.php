@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forgot Password | FinCore</title>
+    <title>Forgot Password | De ferg money</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -36,7 +36,7 @@
                     </label>
                     <input id="email" name="email" type="email" required value="{{ old('email') }}"
                            class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition"
-                           placeholder="admin@fincore.com">
+                           placeholder="admin@De ferg money.com">
                     @error('email')
                         <p class="mt-2 text-xs text-rose-400">{{ $message }}</p>
                     @enderror

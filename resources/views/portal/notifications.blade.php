@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Notifications — FinCore Portal')
+@section('title', 'Notifications — De ferg money Portal')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">

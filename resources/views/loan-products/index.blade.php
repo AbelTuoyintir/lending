@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Loan Products | FinCore')
+@section('title', 'Loan Products | De ferg money')
 
 @section('content')
 <div class="space-y-6">

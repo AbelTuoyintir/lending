@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Global Search | FinCore')
+@section('title', 'Global Search | De ferg money')
 @section('page-title', 'Global Search Results')
 
 @section('content')
@@ -114,7 +114,7 @@
     @else
 
         <x-empty-state
-            title="Search the FinCore Loan Database"
+            title="Search the De ferg money Loan Database"
             message="Enter a search term above to find customers, active/settled loans, or payment receipts."
         />
 

@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'Apply for Lending / Loan — FinCore')
+@section('title', 'Apply for Lending / Loan — De ferg money')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">

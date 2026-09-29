@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Server Error | FinCore')
+@section('title', 'Server Error | De ferg money')
 
 @section('content')
 <div class="min-h-[70vh] flex items-center justify-center">

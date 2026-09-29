@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Receipt ' . $payment->payment_number . ' | FinCore')
+@section('title', 'Receipt ' . $payment->payment_number . ' | De ferg money')
 @section('page-title', 'Payment Receipt Details')
 
 @section('content')
@@ -30,7 +30,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">F</div>
-                    <span class="font-extrabold text-xl text-slate-900 tracking-tight">FinCore</span>
+                    <span class="font-extrabold text-xl text-slate-900 tracking-tight">De ferg money</span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">Administrative Financial Services</p>
                 <p class="text-[11px] text-slate-400">Accra, Ghana • Tel: +233 (0) 30 200 0000</p>

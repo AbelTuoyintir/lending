@@ -22,7 +22,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">FinCore Lending</div>
+            <div class="logo">De ferg money Lending</div>
             <div class="subtitle">Official Payment Receipt</div>
         </div>
 
@@ -66,11 +66,11 @@
         </table>
 
         <p style="font-size: 13px; color: #64748b; line-height: 1.4; text-align: center;">
-            You can view your complete financial history and current loan status anytime by logging into your FinCore User Portal.
+            You can view your complete financial history and current loan status anytime by logging into your De ferg money User Portal.
         </p>
 
         <div class="footer">
-            &copy; {{ date('Y') }} FinCore Lending System. All rights reserved.<br>
+            &copy; {{ date('Y') }} De ferg money Lending System. All rights reserved.<br>
             This is an automated receipt generated upon payment processing.
         </div>
     </div>

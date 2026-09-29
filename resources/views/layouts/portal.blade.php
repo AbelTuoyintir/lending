@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'FinCore — Customer Lending Portal')</title>
+    <title>@yield('title', 'De ferg money — Customer Lending Portal')</title>
 
     @vite([
         'resources/css/app.css',
@@ -30,7 +30,7 @@
                             F
                         </div>
                         <div class="flex flex-col">
-                            <span class="font-extrabold text-slate-900 text-lg leading-none tracking-tight">FinCore</span>
+                            <span class="font-extrabold text-slate-900 text-lg leading-none tracking-tight">De ferg money</span>
                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest leading-none mt-0.5">Customer Portal</span>
                         </div>
                     </a>
@@ -156,7 +156,7 @@
 
     {{-- Footer --}}
     <footer class="bg-white border-t border-slate-200 py-6 px-4 sm:px-8 mt-auto text-xs text-slate-500 text-center flex flex-col sm:flex-row justify-between items-center gap-2">
-        <span>&copy; {{ date('Y') }} FinCore Customer Lending Portal. All rights reserved.</span>
+        <span>&copy; {{ date('Y') }} De ferg money Customer Lending Portal. All rights reserved.</span>
         <span class="font-mono text-[11px] text-slate-400">Secure Paystack Payments & Real-time Loan Tracking</span>
     </footer>
 

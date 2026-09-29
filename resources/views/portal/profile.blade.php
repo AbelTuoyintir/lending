@@ -1,6 +1,6 @@
 @extends('layouts.portal')
 
-@section('title', 'My Profile Settings — FinCore Portal')
+@section('title', 'My Profile Settings — De ferg money Portal')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
