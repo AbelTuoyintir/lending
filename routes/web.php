@@ -36,7 +36,7 @@ Route::get('/', function () {
             : redirect()->route('dashboard');
     }
 
-    return redirect()->route('login');
+    return redirect('/login');
 })->name('home');
 
 /*
