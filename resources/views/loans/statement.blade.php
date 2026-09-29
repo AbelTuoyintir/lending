@@ -73,7 +73,7 @@
             </tr>
             <tr>
                 <td>Accumulated Month-End Compound Interest (30%)</td>
-                <td class="text-right font-bold">GHS {{ number_format($loan->interestCycles->sum('interest_charged'), 2) }}</td>
+                <td class="text-right font-bold">GHS {{ number_format($loan->interestCycles->sum('interest_amount'), 2) }}</td>
             </tr>
             <tr>
                 <td>Total Payments Collected</td>
