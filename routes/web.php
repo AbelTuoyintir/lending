@@ -73,12 +73,15 @@ Route::middleware(['auth', EnsureCustomerAccess::class])->prefix('portal')->name
     Route::get('/loans/{loan}/statement', [PortalLoanController::class, 'statement'])->name('loans.statement');
 
     Route::get('/payments', [PortalPaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/make', [PortalPaymentController::class, 'create'])->name('payments.create');
+    Route::get('/payments/create', [PortalPaymentController::class, 'create']);
     Route::get('/payments/{payment}/receipt', [PortalPaymentController::class, 'receipt'])->name('payments.receipt');
 
     Route::post('/payments/paystack/initialize', [PortalPaymentController::class, 'initializePaystack'])->name('payments.paystack.initialize');
     Route::get('/payments/paystack/callback', [PortalPaymentController::class, 'paystackCallback'])->name('payments.paystack.callback');
 
     Route::get('/financial-history', [PortalFinancialHistoryController::class, 'index'])->name('financial-history');
+    Route::get('/statements', [PortalFinancialHistoryController::class, 'index'])->name('statements');
 
     Route::get('/notifications', [PortalNotificationController::class, 'index'])->name('notifications');
 

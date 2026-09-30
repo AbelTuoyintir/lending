@@ -28,41 +28,50 @@
                 <table class="w-full text-left text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold">
                         <tr>
-                            <th class="px-5 py-3.5">Receipt #</th>
-                            <th class="px-5 py-3.5">Loan Number</th>
-                            <th class="px-5 py-3.5">Payment Date</th>
-                            <th class="px-5 py-3.5">Payment Method</th>
-                            <th class="px-5 py-3.5">Reference</th>
-                            <th class="px-5 py-3.5 text-right">Amount Paid</th>
-                            <th class="px-5 py-3.5 text-right">Receipt</th>
+                            <th class="px-4 py-3.5">Payment #</th>
+                            <th class="px-4 py-3.5">Loan</th>
+                            <th class="px-4 py-3.5">Date</th>
+                            <th class="px-4 py-3.5">Method</th>
+                            <th class="px-4 py-3.5">Reference</th>
+                            <th class="px-4 py-3.5 text-right">Amount</th>
+                            <th class="px-4 py-3.5 text-right">Balance After</th>
+                            <th class="px-4 py-3.5 text-center">Status</th>
+                            <th class="px-4 py-3.5 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($payments as $payment)
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="px-5 py-4 font-mono font-bold text-slate-900">
+                                <td class="px-4 py-4 font-mono font-bold text-slate-900">
                                     {{ $payment->payment_number }}
                                 </td>
-                                <td class="px-5 py-4 font-mono text-slate-700">
+                                <td class="px-4 py-4 font-mono text-slate-700">
                                     <a href="{{ route('portal.loans.show', $payment->loan) }}" class="hover:text-blue-600 hover:underline">
                                         {{ $payment->loan->loan_number }}
                                     </a>
                                 </td>
-                                <td class="px-5 py-4 text-slate-600">
-                                    {{ $payment->payment_date ? $payment->payment_date->format('M d, Y h:i A') : '—' }}
+                                <td class="px-4 py-4 text-slate-600">
+                                    {{ $payment->payment_date ? $payment->payment_date->format('M d, Y') : '—' }}
                                 </td>
-                                <td class="px-5 py-4 uppercase font-semibold text-slate-700">
+                                <td class="px-4 py-4 uppercase font-semibold text-slate-700">
                                     {{ strtoupper(str_replace('_', ' ', $payment->payment_method)) }}
                                 </td>
-                                <td class="px-5 py-4 font-mono text-slate-500">
+                                <td class="px-4 py-4 font-mono text-slate-500">
                                     {{ $payment->reference }}
                                 </td>
-                                <td class="px-5 py-4 text-right font-black text-emerald-600 text-sm">
+                                <td class="px-4 py-4 text-right font-black text-emerald-600">
                                     GHS {{ number_format($payment->amount, 2) }}
                                 </td>
-                                <td class="px-5 py-4 text-right">
-                                    <a href="{{ route('portal.payments.receipt', $payment) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 font-bold rounded-lg hover:bg-blue-100 transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <td class="px-4 py-4 text-right font-extrabold text-amber-600">
+                                    GHS {{ number_format($payment->balance_after, 2) }}
+                                </td>
+                                <td class="px-4 py-4 text-center">
+                                    <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full {{ $payment->status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
+                                        {{ ucfirst($payment->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 text-right">
+                                    <a href="{{ route('portal.payments.receipt', $payment) }}" class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded-lg hover:bg-blue-100 transition">
                                         Receipt
                                     </a>
                                 </td>

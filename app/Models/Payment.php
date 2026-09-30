@@ -63,4 +63,23 @@ class Payment extends Model
     {
         return $this->status === 'reversed';
     }
+
+    public function getBalanceAfterAttribute(): float
+    {
+        $txn = FinancialTransaction::where('reference', $this->reference)->first();
+        if ($txn && $txn->balance_after !== null) {
+            return (float) $txn->balance_after;
+        }
+
+        if ($this->loan) {
+            $subsequentPayments = $this->loan->payments()
+                ->where('id', '>', $this->id ?? 0)
+                ->where('status', 'completed')
+                ->sum('amount');
+
+            return (float) ($this->loan->outstanding_balance + $subsequentPayments);
+        }
+
+        return 0.00;
+    }
 }
