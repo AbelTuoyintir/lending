@@ -5,11 +5,16 @@
 @section('content')
 <div class="space-y-8">
 
+    @php
+        $hour = now()->hour;
+        $greeting = $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening');
+    @endphp
+
     {{-- Welcome Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-blue-900 to-indigo-800 text-white rounded-2xl p-6 sm:p-8 shadow-md">
         <div class="space-y-1">
             <span class="text-xs font-bold text-blue-200 uppercase tracking-widest">Customer Portal</span>
-            <h1 class="text-2xl sm:text-3xl font-black tracking-tight">Good afternoon, {{ $customer->first_name }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-black tracking-tight">{{ $greeting }}, {{ $customer->first_name }}</h1>
             <p class="text-xs text-blue-100 max-w-xl">
                 Track your active loans, apply for new lending facilities, view your complete financial transaction history, and pay off your balance securely via Paystack.
             </p>

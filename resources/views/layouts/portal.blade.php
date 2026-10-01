@@ -43,20 +43,20 @@
                         Dashboard
                     </a>
                     <a href="{{ route('portal.loans.index') }}"
-                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.loans.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.loans.index', 'portal.loans.show') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         My Loans
                     </a>
-                    <a href="{{ route('portal.loans.create') }}"
-                       class="px-3 py-2 rounded-lg text-xs font-semibold transition bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60">
-                        + Apply for Loan
+                    <a href="{{ route('portal.payments.create') }}"
+                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.payments.create') ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }} border border-emerald-200/60">
+                        Make Payment
                     </a>
                     <a href="{{ route('portal.payments.index') }}"
-                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.payments.*') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                        Payments & Receipts
+                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.payments.index', 'portal.payments.receipt') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                        Payment History
                     </a>
-                    <a href="{{ route('portal.financial-history') }}"
-                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.financial-history') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-                        Financial History
+                    <a href="{{ route('portal.statements') }}"
+                       class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.statements', 'portal.financial-history') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                        Statements
                     </a>
                     <a href="{{ route('portal.notifications') }}"
                        class="px-3 py-2 rounded-lg text-xs font-semibold transition {{ request()->routeIs('portal.notifications') ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
@@ -99,12 +99,13 @@
         <div x-show="mobileMenuOpen" x-cloak class="lg:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2">
             <a href="{{ route('portal.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Dashboard</a>
             <a href="{{ route('portal.loans.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">My Loans</a>
-            <a href="{{ route('portal.loans.create') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-50">Apply for Loan</a>
-            <a href="{{ route('portal.payments.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Payments & Receipts</a>
-            <a href="{{ route('portal.financial-history') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Financial History</a>
+            <a href="{{ route('portal.payments.create') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-50">Make Payment</a>
+            <a href="{{ route('portal.loans.create') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Apply for Loan</a>
+            <a href="{{ route('portal.payments.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Payment History</a>
+            <a href="{{ route('portal.statements') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Statements</a>
             <a href="{{ route('portal.notifications') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Notifications</a>
             <a href="{{ route('portal.support') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Help & Support</a>
-            <a href="{{ route('portal.profile') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">Profile Settings</a>
+            <a href="{{ route('portal.profile') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">My Profile</a>
             <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t border-slate-100">
                 @csrf
                 <button type="submit" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50">Log out</button>

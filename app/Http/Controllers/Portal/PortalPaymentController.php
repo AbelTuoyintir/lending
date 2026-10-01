@@ -31,6 +31,20 @@ class PortalPaymentController extends Controller
         return view('portal.payments.index', compact('customer', 'payments'));
     }
 
+    public function create(Request $request)
+    {
+        $customer = Auth::user()->customer;
+        $loans = $customer->loans()
+            ->whereIn('status', ['active', 'disbursed', 'partially_paid', 'overdue', 'defaulted'])
+            ->where('outstanding_balance', '>', 0)
+            ->get();
+
+        $selectedLoanId = $request->query('loan_id') ?? $loans->first()?->id;
+        $selectedLoan = $loans->firstWhere('id', $selectedLoanId) ?? $loans->first();
+
+        return view('portal.payments.create', compact('customer', 'loans', 'selectedLoan'));
+    }
+
     public function receipt(Payment $payment)
     {
         $customer = Auth::user()->customer;

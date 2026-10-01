@@ -239,6 +239,26 @@ class PortalTest extends TestCase
         $statementResponse->assertSee('Official Comprehensive Loan Account Statement');
     }
 
+    public function test_customer_can_view_make_payment_page(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $response = $this->actingAs($user)->get(route('portal.payments.create'));
+        $response->assertStatus(200);
+        $response->assertSee('Initiate Loan Payment');
+    }
+
+    public function test_customer_can_view_statements_alias(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $response = $this->actingAs($user)->get(route('portal.statements'));
+        $response->assertStatus(200);
+        $response->assertSee('Financial Transaction History');
+    }
+
     public function test_customer_can_view_support_and_notifications(): void
     {
         $customer = $this->createCustomer();
