@@ -268,6 +268,40 @@ class PortalTest extends TestCase
         $this->actingAs($user)->get(route('portal.notifications'))->assertStatus(200)->assertSee('Notification Center');
     }
 
+    public function test_customer_can_update_profile_and_submit_inquiry(): void
+    {
+        $customer = $this->createCustomer(['email' => 'oldemail@example.com']);
+        $user = User::factory()->create(['email' => 'oldemail@example.com', 'customer_id' => $customer->id]);
+
+        $response = $this->actingAs($user)->put(route('portal.profile.update'), [
+            'first_name' => 'Kofi',
+            'last_name' => 'Annan',
+            'email' => 'kofi.annan@example.com',
+            'phone' => '0249998877',
+            'occupation' => 'Financial Analyst',
+            'employer' => 'Capital Group',
+            'monthly_income' => 8500,
+            'address' => 'Airport Residential Area, Accra',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('customers', [
+            'id' => $customer->id,
+            'first_name' => 'Kofi',
+            'last_name' => 'Annan',
+            'email' => 'kofi.annan@example.com',
+            'phone' => '0249998877',
+        ]);
+
+        $inquiryResponse = $this->actingAs($user)->post(route('portal.support.inquiry'), [
+            'subject' => 'Repayment Inquiry',
+            'message' => 'I would like to inquire about interest calculation on my balance.',
+        ]);
+
+        $inquiryResponse->assertRedirect();
+        $inquiryResponse->assertSessionHas('success');
+    }
+
     public function test_customer_cannot_access_admin_management_routes(): void
     {
         $customer = $this->createCustomer();
