@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CustomerWelcomeMail;
 use App\Models\Customer;
+use App\Models\User;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class CustomerController extends Controller
@@ -61,7 +67,7 @@ class CustomerController extends Controller
         return view('customers.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, SmsService $smsService)
     {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
@@ -69,7 +75,7 @@ class CustomerController extends Controller
             'last_name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:30'],
             'alternate_phone' => ['nullable', 'string', 'max:30'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'date_of_birth' => ['nullable', 'date'],
             'gender' => ['nullable', 'string', 'max:20'],
             'id_type' => ['nullable', 'string', 'max:50'],
@@ -92,11 +98,32 @@ class CustomerController extends Controller
 
         $validated['customer_number'] = 'CUS-'.strtoupper(Str::random(8));
 
-        $customer = Customer::create($validated);
+        // Generate unique plain text password for customer
+        $plainPassword = Str::random(10);
+
+        [$customer, $user] = DB::transaction(function () use ($validated, $plainPassword) {
+            $customer = Customer::create($validated);
+
+            $user = User::create([
+                'name' => $customer->full_name,
+                'email' => $customer->email,
+                'password' => Hash::make($plainPassword),
+                'customer_id' => $customer->id,
+            ]);
+
+            return [$customer, $user];
+        });
+
+        // Send login credentials via email
+        Mail::to($user->email)->send(new CustomerWelcomeMail($user, $plainPassword));
+
+        // Send login credentials via SMS
+        $smsMessage = "Welcome to FinCore, {$customer->first_name}! Your portal account login details: Email: {$user->email}, Password: {$plainPassword}";
+        $smsService->sendSms($customer->phone, $smsMessage);
 
         return redirect()
             ->route('customers.show', $customer)
-            ->with('success', 'Customer profile created successfully.');
+            ->with('success', "Customer profile created successfully. User login account created and credentials sent via email & SMS. Temporary Password: {$plainPassword}");
     }
 
     public function show(Customer $customer)
