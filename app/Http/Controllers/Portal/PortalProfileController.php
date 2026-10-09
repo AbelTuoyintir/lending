@@ -37,12 +37,19 @@ class PortalProfileController extends Controller
             'occupation' => ['nullable', 'string', 'max:255'],
             'employer' => ['nullable', 'string', 'max:255'],
             'monthly_income' => ['nullable', 'numeric', 'min:0'],
+            'profile_photo' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $user->update([
             'email' => $validatedUser['email'],
             'name' => trim($validatedCustomer['first_name'].' '.$validatedCustomer['last_name']),
         ]);
+
+        if ($request->hasFile('profile_photo')) {
+            $request->file('profile_photo')->store('profile-photos', 'public');
+        }
+
+        unset($validatedCustomer['profile_photo']);
 
         if ($customer) {
             $customer->update(array_merge($validatedCustomer, [

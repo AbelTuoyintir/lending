@@ -34,9 +34,16 @@
 
         <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Personal & Contact Details</h3>
 
-        <form action="{{ route('portal.profile.update') }}" method="POST" class="space-y-4">
+        <form action="{{ route('portal.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Profile Photo / Identification Image</label>
+                <input type="file" name="profile_photo" accept="image/*"
+                       class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-200 rounded-xl p-1.5">
+                <p class="text-[11px] text-slate-400 mt-1">Uploaded profile photo / identity document updates will be submitted for administrator verification.</p>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
