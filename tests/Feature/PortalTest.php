@@ -310,4 +310,46 @@ class PortalTest extends TestCase
         $response = $this->actingAs($user)->get(route('customers.index'));
         $response->assertRedirect(route('portal.dashboard'));
     }
+
+    public function test_due_date_reminders_and_compound_interest_notifications(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-03',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 30,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        // 1. Future Due Date
+        $loanFuture = Loan::create([
+            'loan_number' => 'LN-FUTURE-01',
+            'customer_id' => $customer->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 30,
+            'interest_type' => 'flat',
+            'interest_amount' => 300,
+            'total_payable' => 1300,
+            'amount_paid' => 0,
+            'outstanding_balance' => 1300,
+            'duration' => 1,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'maturity_date' => now()->addDays(5)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('portal.notifications'));
+        $response->assertStatus(200);
+        $response->assertSee('Upcoming Due Date');
+        $response->assertSee('Your loan payment for LN-FUTURE-01 is due on');
+    }
 }
