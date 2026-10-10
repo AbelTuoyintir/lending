@@ -310,4 +310,106 @@ class PortalTest extends TestCase
         $response = $this->actingAs($user)->get(route('customers.index'));
         $response->assertRedirect(route('portal.dashboard'));
     }
+
+    public function test_customer_cannot_access_another_customers_financial_data(): void
+    {
+        $customerA = $this->createCustomer(['first_name' => 'Customer', 'last_name' => 'A']);
+        $userA = User::factory()->create(['customer_id' => $customerA->id]);
+
+        $customerB = $this->createCustomer(['first_name' => 'Customer', 'last_name' => 'B']);
+        $userB = User::factory()->create(['customer_id' => $customerB->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-03',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        $loanB = Loan::create([
+            'loan_number' => 'LN-2026-0009',
+            'customer_id' => $customerB->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'interest_amount' => 100,
+            'total_payable' => 1100,
+            'amount_paid' => 0,
+            'outstanding_balance' => 1100,
+            'duration' => 6,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $paymentB = Payment::create([
+            'payment_number' => 'PAY-2026-0009',
+            'loan_id' => $loanB->id,
+            'customer_id' => $customerB->id,
+            'amount' => 200,
+            'payment_method' => 'card',
+            'reference' => 'PAYSTACK_REF_B',
+            'payment_date' => now(),
+            'status' => 'completed',
+        ]);
+
+        // Customer A trying to view Customer B's loan details
+        $this->actingAs($userA)->get(route('portal.loans.show', $loanB))->assertStatus(403);
+
+        // Customer A trying to view Customer B's agreement
+        $this->actingAs($userA)->get(route('portal.loans.agreement', $loanB))->assertStatus(403);
+
+        // Customer A trying to view Customer B's statement
+        $this->actingAs($userA)->get(route('portal.loans.statement', $loanB))->assertStatus(403);
+
+        // Customer A trying to view Customer B's payment receipt
+        $this->actingAs($userA)->get(route('portal.payments.receipt', $paymentB))->assertStatus(403);
+    }
+
+    public function test_customer_receives_due_date_reminders_and_notifications(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-04',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 30,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        $loan = Loan::create([
+            'loan_number' => 'LN-2026-0010',
+            'customer_id' => $customer->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 30,
+            'interest_type' => 'flat',
+            'interest_amount' => 300,
+            'total_payable' => 1300,
+            'amount_paid' => 500,
+            'outstanding_balance' => 800,
+            'duration' => 6,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'maturity_date' => now()->addDays(5)->toDateString(),
+            'status' => 'partially_paid',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('portal.notifications'));
+        $response->assertStatus(200);
+        $response->assertSee('Upcoming Due Date');
+        $response->assertSee('Your loan payment for LN-2026-0010 is due on');
+    }
 }
