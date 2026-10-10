@@ -12,7 +12,9 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return Auth::user()->isCustomer()
+                ? redirect()->route('portal.dashboard')
+                : redirect()->route('dashboard');
         }
 
         return view('auth.login');
@@ -28,10 +30,11 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            if($user->isCustomer()){
+            $user = Auth::user();
+            if ($user && $user->isCustomer()) {
                 return redirect()->intended(route('portal.dashboard'));
             }
-            
+
             return redirect()->intended(route('dashboard'));
         }
 
