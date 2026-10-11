@@ -75,7 +75,7 @@ class CustomerTest extends TestCase
             'password' => $generatedPassword,
         ]);
 
-        $loginResponse->assertRedirect(route('dashboard'));
+        $loginResponse->assertRedirect(route('portal.dashboard'));
         $this->assertAuthenticatedAs($customerUser);
     }
 }
