@@ -39,6 +39,7 @@ class AdministratorController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => 'admin',
         ]);
 
         return redirect()
