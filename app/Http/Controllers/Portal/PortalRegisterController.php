@@ -59,6 +59,7 @@ class PortalRegisterController extends Controller
                 'name' => $customer->full_name,
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
+                'role' => 'customer',
                 'customer_id' => $customer->id,
             ]);
 

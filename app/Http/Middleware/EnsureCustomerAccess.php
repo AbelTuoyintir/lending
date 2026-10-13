@@ -15,7 +15,7 @@ class EnsureCustomerAccess
     {
         $user = $request->user();
 
-        if ($user && ! $user->customer_id) {
+        if ($user && ($user->role === 'admin' || ! $user->customer_id)) {
             return redirect()->route('dashboard')
                 ->with('error', 'Administrator accounts do not have a customer profile. Please use the administrative portal.');
         }

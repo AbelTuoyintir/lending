@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'customer_id'])]
+#[Fillable(['name', 'email', 'password', 'role', 'customer_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -36,14 +36,19 @@ class User extends Authenticatable
         return $this->belongsTo(Customer::class);
     }
 
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
     public function isCustomer(): bool
     {
-        return ! is_null($this->customer_id);
+        return $this->role === 'customer' || ! is_null($this->customer_id);
     }
 
     public function isAdmin(): bool
     {
-        return is_null($this->customer_id);
+        return $this->role === 'admin' || (is_null($this->customer_id) && $this->role !== 'customer');
     }
 
     /*

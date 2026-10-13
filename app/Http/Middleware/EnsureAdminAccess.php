@@ -15,7 +15,7 @@ class EnsureAdminAccess
     {
         $user = $request->user();
 
-        if ($user && $user->isCustomer()) {
+        if ($user && ($user->role === 'customer' || $user->isCustomer())) {
             return redirect()->route('portal.dashboard')
                 ->with('error', 'Access restricted. Customers can only access the Customer Portal.');
         }
