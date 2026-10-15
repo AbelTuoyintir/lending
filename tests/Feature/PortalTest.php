@@ -412,4 +412,32 @@ class PortalTest extends TestCase
         $response->assertSee('Upcoming Due Date');
         $response->assertSee('Your loan payment for LN-2026-0010 is due on');
     }
+
+    public function test_role_differentiates_admin_and_customer(): void
+    {
+        $adminUser = User::factory()->create([
+            'role' => 'admin',
+            'customer_id' => null,
+        ]);
+
+        $customer = $this->createCustomer();
+        $customerUser = User::factory()->create([
+            'role' => 'customer',
+            'customer_id' => $customer->id,
+        ]);
+
+        $this::assertTrue($adminUser->isAdmin());
+        $this::assertFalse($adminUser->isCustomer());
+        $this::assertTrue($adminUser->hasRole('admin'));
+
+        $this::assertTrue($customerUser->isCustomer());
+        $this::assertFalse($customerUser->isAdmin());
+        $this::assertTrue($customerUser->hasRole('customer'));
+
+        // Admin restricted from customer portal
+        $this->actingAs($adminUser)->get(route('portal.dashboard'))->assertRedirect(route('dashboard'));
+
+        // Customer restricted from admin routes
+        $this->actingAs($customerUser)->get(route('customers.index'))->assertRedirect(route('portal.dashboard'));
+    }
 }
