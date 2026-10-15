@@ -25,9 +25,12 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            
             if($user->isCustomer()){
                 return redirect()->intended(route('portal.dashboard'));
             }

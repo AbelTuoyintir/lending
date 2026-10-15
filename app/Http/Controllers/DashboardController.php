@@ -33,7 +33,7 @@ class DashboardController extends Controller
         $totalPrincipalDisbursed = Loan::whereNotNull('disbursement_date')->sum('principal_amount');
 
         $initialInterest = Loan::sum('interest_amount');
-        $compoundInterest = LoanInterestCycle::sum('interest_charged');
+        $compoundInterest = LoanInterestCycle::sum('interest_rate');
         $totalInterestGenerated = $initialInterest + $compoundInterest;
 
         $totalAmountPaid = Payment::where('status', 'completed')->sum('amount');
@@ -63,9 +63,9 @@ class DashboardController extends Controller
 
         $upcomingDueLoans = Loan::with('customer')
             ->whereIn('status', ['disbursed', 'active', 'partially_paid'])
-            ->where('due_date', '>=', now())
-            ->where('due_date', '<=', now()->endOfMonth())
-            ->orderBy('due_date')
+            ->where('maturity_date', '>=', now())
+            ->where('maturity_date', '<=', now()->endOfMonth())
+            ->orderBy('maturity_date')
             ->limit(5)
             ->get();
 
