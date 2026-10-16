@@ -78,4 +78,17 @@ class Customer extends Model
             $this->last_name
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    public function hasOutstandingLoan(): bool
+    {
+        return $this->loans()
+            ->whereNotIn('status', ['fully_paid', 'cancelled'])
+            ->exists();
+    }
 }

@@ -35,6 +35,7 @@
                                 data-name="{{ $customer->full_name }}"
                                 data-phone="{{ $customer->phone }}"
                                 data-status="{{ $customer->status }}"
+                                data-has-outstanding="{{ $customer->hasOutstandingLoan() ? '1' : '0' }}"
                                 data-outstanding="{{ $customer->loans->whereIn('status', ['disbursed','active','partially_paid','overdue'])->sum('outstanding_balance') }}"
                                 @selected(old('customer_id', request('customer_id')) == $customer->id)>
                             {{ $customer->full_name }} ({{ $customer->customer_number }}) - {{ $customer->phone }}
@@ -58,6 +59,9 @@
                 </div>
                 <div x-show="selectedCustomer.status === 'blacklisted'" class="p-2 bg-red-100 text-red-800 font-bold rounded-lg text-xs">
                     ⚠️ Blacklisted customers are prohibited from receiving new loan disbursements.
+                </div>
+                <div x-show="selectedCustomer.hasOutstanding" class="p-2 bg-amber-100 text-amber-800 font-bold rounded-lg text-xs">
+                    ⚠️ This customer currently has an unresolved loan. New loan requests cannot be created until existing loans are resolved.
                 </div>
             </div>
         </div>
@@ -164,7 +168,7 @@
 function loanCalculator() {
     return {
         selectedCustomerId: '{{ old('customer_id', request('customer_id')) }}',
-        selectedCustomer: { name: '', phone: '', status: '', outstanding: 0 },
+        selectedCustomer: { name: '', phone: '', status: '', hasOutstanding: false, outstanding: 0 },
         principal: 1000,
         rate: 0.30,
         interest: 300,
@@ -186,10 +190,11 @@ function loanCalculator() {
                     name: opt.getAttribute('data-name') || '',
                     phone: opt.getAttribute('data-phone') || '',
                     status: opt.getAttribute('data-status') || '',
+                    hasOutstanding: opt.getAttribute('data-has-outstanding') === '1',
                     outstanding: parseFloat(opt.getAttribute('data-outstanding') || '0')
                 };
             } else {
-                this.selectedCustomer = { name: '', phone: '', status: '', outstanding: 0 };
+                this.selectedCustomer = { name: '', phone: '', status: '', hasOutstanding: false, outstanding: 0 };
             }
         },
 
@@ -219,6 +224,11 @@ function loanCalculator() {
 
             if (this.selectedCustomer.status === 'blacklisted') {
                 Swal.fire('Prohibited Action', 'Cannot create a loan for a blacklisted customer.', 'error');
+                return;
+            }
+
+            if (this.selectedCustomer.hasOutstanding) {
+                Swal.fire('Prohibited Action', 'Cannot create a new loan for a customer with an unresolved loan.', 'error');
                 return;
             }
 

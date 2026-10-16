@@ -34,6 +34,13 @@ class PortalLoanController extends Controller
 
     public function create()
     {
+        $customer = Auth::user()->customer;
+
+        if ($customer->hasOutstandingLoan()) {
+            return redirect()->route('portal.loans.index')
+                ->with('error', 'You cannot apply for a new loan facility while you have an existing loan that is not resolved.');
+        }
+
         $loanProducts = LoanProduct::all();
 
         return view('portal.loans.create', compact('loanProducts'));
@@ -42,6 +49,11 @@ class PortalLoanController extends Controller
     public function store(Request $request)
     {
         $customer = Auth::user()->customer;
+
+        if ($customer->hasOutstandingLoan()) {
+            return redirect()->route('portal.loans.index')
+                ->with('error', 'You cannot apply for a new loan facility while you have an existing loan that is not resolved.');
+        }
 
         $validated = $request->validate([
             'loan_product_id' => ['required', 'exists:loan_products,id'],
