@@ -14,7 +14,7 @@ class TransactionController extends Controller
         }
 
         $transactions = FinancialTransaction::query()
-            ->with(['account', 'customer', 'loan', 'user'])
+            ->with(['financialAccount', 'customer', 'loan', 'customer'])
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('transaction_number', 'like', "%{$search}%")
