@@ -107,7 +107,7 @@ class CustomerController extends Controller
             $user = User::create([
                 'name' => $customer->full_name,
                 'email' => $customer->email,
-                'password' => Hash::make($plainPassword),
+                'password' => $plainPassword,
                 'role' => 'customer',
                 'customer_id' => $customer->id,
             ]);
