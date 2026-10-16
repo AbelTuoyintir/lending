@@ -20,10 +20,17 @@
             </p>
         </div>
         <div class="shrink-0 flex gap-2">
-            <a href="{{ route('portal.loans.create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-5 py-3 rounded-xl shadow transition flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                Apply for Loan
-            </a>
+            @if($customer?->hasOutstandingLoan())
+                <span title="New loan applications are restricted while you have an unresolved loan." class="bg-blue-800/60 text-blue-300 text-xs font-bold px-5 py-3 rounded-xl transition flex items-center gap-1.5 cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Apply for Loan
+                </span>
+            @else
+                <a href="{{ route('portal.loans.create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-5 py-3 rounded-xl shadow transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Apply for Loan
+                </a>
+            @endif
         </div>
     </div>
 
@@ -93,7 +100,11 @@
                 </div>
                 <p class="text-sm font-semibold text-slate-700">No loan records found.</p>
                 <p class="text-xs text-slate-500">Ready to get started? Apply for a quick loan facility today.</p>
-                <a href="{{ route('portal.loans.create') }}" class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Apply Now</a>
+                @if($customer?->hasOutstandingLoan())
+                    <span class="inline-block bg-slate-200 text-slate-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed">Apply for Loan (Locked)</span>
+                @else
+                    <a href="{{ route('portal.loans.create') }}" class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Apply Now</a>
+                @endif
             </div>
         @else
             <div class="overflow-x-auto">

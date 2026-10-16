@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Customer;
 use App\Models\FinancialAccount;
 use App\Models\FinancialTransaction;
 use App\Models\Loan;
@@ -19,6 +20,12 @@ class LoanService
     public function createLoan(array $data): Loan
     {
         return DB::transaction(function () use ($data) {
+
+            $customer = Customer::findOrFail($data['customer_id']);
+
+            if ($customer->hasOutstandingLoan()) {
+                throw new RuntimeException('Customer already has an outstanding loan that is not resolved.');
+            }
 
             $loanProduct = LoanProduct::findOrFail($data['loan_product_id']);
 

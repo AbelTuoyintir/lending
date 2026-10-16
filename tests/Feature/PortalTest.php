@@ -440,4 +440,53 @@ class PortalTest extends TestCase
         // Customer restricted from admin routes
         $this->actingAs($customerUser)->get(route('customers.index'))->assertRedirect(route('portal.dashboard'));
     }
+
+    public function test_customer_cannot_apply_for_loan_with_outstanding_loan(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-05',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        Loan::create([
+            'loan_number' => 'LN-2026-0099',
+            'customer_id' => $customer->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'interest_amount' => 100,
+            'total_payable' => 1100,
+            'amount_paid' => 0,
+            'outstanding_balance' => 1100,
+            'duration' => 6,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        // Attempt GET create form
+        $getResponse = $this->actingAs($user)->get(route('portal.loans.create'));
+        $getResponse->assertRedirect(route('portal.loans.index'));
+        $getResponse->assertSessionHas('error', 'You cannot apply for a new loan facility while you have an existing loan that is not resolved.');
+
+        // Attempt POST store action
+        $postResponse = $this->actingAs($user)->post(route('portal.loans.store'), [
+            'loan_product_id' => $product->id,
+            'principal_amount' => 2000,
+            'duration' => 6,
+        ]);
+        $postResponse->assertRedirect(route('portal.loans.index'));
+        $postResponse->assertSessionHas('error', 'You cannot apply for a new loan facility while you have an existing loan that is not resolved.');
+    }
 }

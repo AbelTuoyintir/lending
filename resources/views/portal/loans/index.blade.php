@@ -12,12 +12,29 @@
             <p class="text-xs text-slate-500">View loan details, active balances, repayment schedules, or apply for a new loan facility.</p>
         </div>
         <div>
-            <a href="{{ route('portal.loans.create') }}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Apply for New Loan
-            </a>
+            @if($customer->hasOutstandingLoan())
+                <span title="New loan applications are restricted until your existing loan is resolved." class="inline-flex items-center gap-2 bg-slate-200 text-slate-500 font-bold text-xs px-4 py-2.5 rounded-xl cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Apply for New Loan
+                </span>
+            @else
+                <a href="{{ route('portal.loans.create') }}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Apply for New Loan
+                </a>
+            @endif
         </div>
     </div>
+
+    @if($customer->hasOutstandingLoan())
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-800">
+            <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <div>
+                <p class="font-bold">Active / Outstanding Loan Policy</p>
+                <p class="mt-0.5 text-amber-700">You currently have an unresolved loan. New loan applications are restricted until your existing loan facility is completely paid or resolved.</p>
+            </div>
+        </div>
+    @endif
 
     {{-- Tabs --}}
     <div class="flex border-b border-slate-200 gap-6 text-xs font-bold">
@@ -38,7 +55,11 @@
                 </div>
                 <h3 class="text-base font-bold text-slate-800">No Loans Found</h3>
                 <p class="text-xs text-slate-500 max-w-sm mx-auto">You have no {{ $tab ?? 'active' }} loan facilities under this section.</p>
-                <a href="{{ route('portal.loans.create') }}" class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm">Apply for Loan</a>
+                @if($customer->hasOutstandingLoan())
+                    <span class="inline-block bg-slate-200 text-slate-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed">Apply for Loan (Locked)</span>
+                @else
+                    <a href="{{ route('portal.loans.create') }}" class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm">Apply for Loan</a>
+                @endif
             </div>
         @else
             <div class="overflow-x-auto">

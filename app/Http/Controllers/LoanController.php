@@ -113,6 +113,10 @@ class LoanController extends Controller
             return back()->withInput()->with('error', 'Cannot create loan for a blacklisted customer.');
         }
 
+        if ($customer->hasOutstandingLoan()) {
+            return back()->withInput()->with('error', 'Cannot create a new loan for a customer with an unresolved outstanding loan.');
+        }
+
         try {
             $loan = $this->loanService->createLoan($validated);
 
