@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -62,28 +63,42 @@ class AuthController extends Controller
     {
         $request->validate(['email' => ['required', 'email']]);
 
+        // Security: Generate and send password reset token securely via Password broker
+        Password::sendResetLink($request->only('email'));
+
         return back()->with('success', 'If an account exists with this email, a password reset link has been sent.');
     }
 
-    public function showResetPassword(Request $request)
+    public function showResetPassword(Request $request, ?string $token = null)
     {
-        return view('auth.reset-password', ['email' => $request->email]);
+        return view('auth.reset-password', [
+            'token' => $token ?? $request->token,
+            'email' => $request->email,
+        ]);
     }
 
     public function resetPassword(Request $request)
     {
         $request->validate([
+            'token' => ['required', 'string'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if ($user) {
-            $user->password = Hash::make($request->password);
-            $user->save();
+        // Security: Enforce password reset token validation to prevent unauthenticated account takeover
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->password = $password;
+                $user->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', __($status));
         }
 
-        return redirect()->route('login')->with('success', 'Password reset successfully. Please log in with your new password.');
+        return back()->withErrors(['email' => __($status)])->onlyInput('email');
     }
 
     public function showProfile()
