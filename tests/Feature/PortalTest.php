@@ -370,6 +370,14 @@ class PortalTest extends TestCase
 
         // Customer A trying to view Customer B's payment receipt
         $this->actingAs($userA)->get(route('portal.payments.receipt', $paymentB))->assertStatus(403);
+
+        // Customer A trying to process Paystack callback on Customer B's loan
+        $response = $this->actingAs($userA)->get(route('portal.payments.paystack.callback', [
+            'reference' => 'PAYSTACK_TEST_IDOR_REF',
+            'loan_id' => $loanB->id,
+            'amount' => 100,
+        ]));
+        $response->assertStatus(403);
     }
 
     public function test_customer_receives_due_date_reminders_and_notifications(): void
