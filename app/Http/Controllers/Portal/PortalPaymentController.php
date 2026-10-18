@@ -137,7 +137,14 @@ class PortalPaymentController extends Controller
                 return redirect()->route('portal.payments.index')->with('error', 'Invalid transaction payload metadata.');
             }
 
+            $customer = Auth::user()->customer;
             $loan = Loan::findOrFail($loanId);
+
+            // Security: Enforce ownership check to prevent IDOR vulnerabilities in payment callbacks
+            if ($loan->customer_id !== $customer->id) {
+                abort(403, 'Unauthorized access to loan.');
+            }
+
             $financialAccount = FinancialAccount::first();
 
             $payment = $this->paymentService->recordPayment($loan, [
@@ -162,6 +169,8 @@ class PortalPaymentController extends Controller
 
             return redirect()->route('portal.payments.receipt', $payment)
                 ->with('success', 'Payment of GHS '.number_format($payment->amount, 2).' processed successfully via Paystack!');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            throw $e;
         } catch (Exception $e) {
             Log::error('Paystack callback error: '.$e->getMessage());
 
