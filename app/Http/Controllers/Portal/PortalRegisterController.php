@@ -36,9 +36,8 @@ class PortalRegisterController extends Controller
         ]);
 
         $user = DB::transaction(function () use ($validated) {
-            $customer = Customer::where('email', $validated['email'])
-                ->orWhere('phone', $validated['phone'])
-                ->first();
+            // Security: Match existing customer strictly by email address to prevent account takeover/IDOR via phone number matching
+            $customer = Customer::where('email', $validated['email'])->first();
 
             if (! $customer) {
                 $customerNumber = 'CUST-'.now()->format('Ymd').'-'.strtoupper(Str::random(4));
