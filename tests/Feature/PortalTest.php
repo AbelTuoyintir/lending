@@ -497,4 +497,27 @@ class PortalTest extends TestCase
         $postResponse->assertRedirect(route('portal.loans.index'));
         $postResponse->assertSessionHas('error', 'You cannot apply for a new loan facility while you have an existing loan that is not resolved.');
     }
+
+    public function test_registration_does_not_link_existing_customer_by_phone(): void
+    {
+        $existingCustomer = $this->createCustomer([
+            'email' => 'victim@example.com',
+            'phone' => '0241112233',
+        ]);
+
+        $response = $this->post(route('register.post'), [
+            'first_name' => 'Attacker',
+            'last_name' => 'User',
+            'email' => 'attacker@example.com',
+            'phone' => '0241112233',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('portal.dashboard'));
+
+        $attackerUser = User::where('email', 'attacker@example.com')->first();
+        $this->assertNotNull($attackerUser);
+        $this->assertNotEquals($existingCustomer->id, $attackerUser->customer_id);
+    }
 }
