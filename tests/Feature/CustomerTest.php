@@ -78,4 +78,58 @@ class CustomerTest extends TestCase
         $loginResponse->assertRedirect(route('portal.dashboard'));
         $this->assertAuthenticatedAs($customerUser);
     }
+
+    public function test_customer_update_enforces_unique_email_and_syncs_user(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $customer1 = Customer::create([
+            'customer_number' => 'CUS-10000001',
+            'first_name' => 'Alice',
+            'last_name' => 'One',
+            'phone' => '0240000001',
+            'email' => 'alice@example.com',
+            'status' => 'active',
+        ]);
+        $user1 = User::create([
+            'name' => 'Alice One',
+            'email' => 'alice@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'customer_id' => $customer1->id,
+        ]);
+
+        $customer2 = Customer::create([
+            'customer_number' => 'CUS-10000002',
+            'first_name' => 'Bob',
+            'last_name' => 'Two',
+            'phone' => '0240000002',
+            'email' => 'bob@example.com',
+            'status' => 'active',
+        ]);
+
+        // Attemping to update customer1 email to customer2's email should fail validation
+        $response = $this->actingAs($admin)->put(route('customers.update', $customer1), [
+            'first_name' => 'Alice',
+            'last_name' => 'One',
+            'phone' => '0240000001',
+            'email' => 'bob@example.com',
+            'status' => 'active',
+        ]);
+        $response->assertSessionHasErrors('email');
+
+        // Updating customer1 with a valid new unique email should update both customer and user record
+        $responseSuccess = $this->actingAs($admin)->put(route('customers.update', $customer1), [
+            'first_name' => 'Alice',
+            'last_name' => 'Updated',
+            'phone' => '0240000001',
+            'email' => 'alice.new@example.com',
+            'status' => 'active',
+        ]);
+        $responseSuccess->assertRedirect(route('customers.show', $customer1));
+
+        $this->assertEquals('alice.new@example.com', $customer1->fresh()->email);
+        $this->assertEquals('alice.new@example.com', $user1->fresh()->email);
+        $this->assertEquals('Alice Updated', $user1->fresh()->name);
+    }
 }

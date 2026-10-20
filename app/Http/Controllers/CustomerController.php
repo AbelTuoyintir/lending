@@ -159,13 +159,21 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
+        $linkedUser = User::where('customer_id', $customer->id)->first();
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'middle_name' => ['nullable', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:30'],
             'alternate_phone' => ['nullable', 'string', 'max:30'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                'unique:customers,email,'.$customer->id,
+                'unique:users,email,'.($linkedUser?->id ?? 'NULL'),
+            ],
             'date_of_birth' => ['nullable', 'date'],
             'gender' => ['nullable', 'string', 'max:20'],
             'id_type' => ['nullable', 'string', 'max:50'],
@@ -186,7 +194,16 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $customer->update($validated);
+        DB::transaction(function () use ($customer, $validated, $linkedUser) {
+            $customer->update($validated);
+
+            if ($linkedUser && ! empty($validated['email'])) {
+                $linkedUser->update([
+                    'email' => $validated['email'],
+                    'name' => $customer->full_name,
+                ]);
+            }
+        });
 
         return redirect()
             ->route('customers.show', $customer)
