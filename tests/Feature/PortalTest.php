@@ -520,4 +520,115 @@ class PortalTest extends TestCase
         $this->assertNotNull($attackerUser);
         $this->assertNotEquals($existingCustomer->id, $attackerUser->customer_id);
     }
+
+    public function test_paystack_callback_uses_verified_amount_over_manipulated_query_parameters(): void
+    {
+        Mail::fake();
+
+        $customer = $this->createCustomer(['email' => 'tamper@fincore.com']);
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-06',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        $loan = Loan::create([
+            'loan_number' => 'LN-2026-0088',
+            'customer_id' => $customer->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'interest_amount' => 100,
+            'total_payable' => 1100,
+            'amount_paid' => 0,
+            'outstanding_balance' => 1100,
+            'duration' => 6,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        // Initialize with amount 100
+        $this->actingAs($user)->post(route('portal.payments.paystack.initialize'), [
+            'loan_id' => $loan->id,
+            'amount' => 100,
+        ]);
+
+        $reference = session('paystack_latest_ref');
+
+        // Attacker attempts to send ?amount=1000 in query string on callback
+        $response = $this->actingAs($user)->get(route('portal.payments.paystack.callback', [
+            'reference' => $reference,
+            'loan_id' => $loan->id,
+            'amount' => 1000, // Query parameter tampering attempt
+        ]));
+
+        $payment = Payment::where('reference', $reference)->first();
+        $this->assertNotNull($payment);
+        // Should use initialized/verified session amount (100) rather than tampered query parameter (1000)
+        $this->assertEquals(100, $payment->amount);
+    }
+
+    public function test_paystack_callback_is_idempotent_for_duplicate_requests(): void
+    {
+        $customer = $this->createCustomer();
+        $user = User::factory()->create(['customer_id' => $customer->id]);
+
+        $product = LoanProduct::create([
+            'code' => 'QL-07',
+            'name' => 'Quick Loan',
+            'min_amount' => 100,
+            'max_amount' => 50000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'min_duration' => 1,
+            'max_duration' => 12,
+            'repayment_frequency' => 'monthly',
+        ]);
+
+        $loan = Loan::create([
+            'loan_number' => 'LN-2026-0077',
+            'customer_id' => $customer->id,
+            'loan_product_id' => $product->id,
+            'principal_amount' => 1000,
+            'interest_rate' => 10,
+            'interest_type' => 'flat',
+            'interest_amount' => 100,
+            'total_payable' => 1100,
+            'amount_paid' => 100,
+            'outstanding_balance' => 1000,
+            'duration' => 6,
+            'repayment_frequency' => 'monthly',
+            'loan_date' => now()->toDateString(),
+            'status' => 'partially_paid',
+        ]);
+
+        $payment = Payment::create([
+            'payment_number' => 'PAY-2026-0077',
+            'loan_id' => $loan->id,
+            'customer_id' => $customer->id,
+            'amount' => 100,
+            'payment_method' => 'card',
+            'reference' => 'PAYSTACK_PROCESSED_REF_99',
+            'payment_date' => now(),
+            'status' => 'completed',
+        ]);
+
+        // Second request with already processed payment reference
+        $response = $this->actingAs($user)->get(route('portal.payments.paystack.callback', [
+            'reference' => 'PAYSTACK_PROCESSED_REF_99',
+        ]));
+
+        $response->assertRedirect(route('portal.payments.receipt', $payment));
+        $response->assertSessionHas('info', 'This payment transaction has already been processed.');
+    }
 }

@@ -124,20 +124,33 @@ class PortalPaymentController extends Controller
         $pendingData = session($sessionKey);
 
         try {
+            $customer = Auth::user()->customer;
+
+            // Security: Check if payment has already been processed to ensure idempotency
+            $existingPayment = Payment::where('reference', $reference)->first();
+            if ($existingPayment) {
+                if ($existingPayment->customer_id !== $customer->id) {
+                    abort(403, 'Unauthorized access to loan.');
+                }
+
+                return redirect()->route('portal.payments.receipt', $existingPayment)
+                    ->with('info', 'This payment transaction has already been processed.');
+            }
+
             $verification = $this->paystackService->verifyTransaction($reference);
 
             if (! $verification['status']) {
                 return redirect()->route('portal.payments.index')->with('error', 'Payment verification failed: '.($verification['message'] ?? 'Transaction incomplete'));
             }
 
-            $loanId = $pendingData['loan_id'] ?? $request->query('loan_id') ?? ($verification['metadata']['loan_id'] ?? null);
-            $amount = $pendingData['amount'] ?? $request->query('amount') ?? ($verification['amount'] ?? null);
+            // Security: Prioritize verified transaction payload over untrusted request query parameters to prevent parameter tampering
+            $loanId = $pendingData['loan_id'] ?? ($verification['metadata']['loan_id'] ?? null) ?? $request->query('loan_id');
+            $amount = $pendingData['amount'] ?? ($verification['amount'] ?? null) ?? ($verification['metadata']['amount'] ?? null) ?? $request->query('amount');
 
             if (! $loanId || ! $amount) {
                 return redirect()->route('portal.payments.index')->with('error', 'Invalid transaction payload metadata.');
             }
 
-            $customer = Auth::user()->customer;
             $loan = Loan::findOrFail($loanId);
 
             // Security: Enforce ownership check to prevent IDOR vulnerabilities in payment callbacks
@@ -174,7 +187,7 @@ class PortalPaymentController extends Controller
         } catch (Exception $e) {
             Log::error('Paystack callback error: '.$e->getMessage());
 
-            return redirect()->route('portal.payments.index')->with('error', 'Payment processing error: '.$e->getMessage());
+            return redirect()->route('portal.payments.index')->with('error', 'Unable to process payment. Please try again or contact support.');
         }
     }
 }
