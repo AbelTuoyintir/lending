@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PortalPaymentController extends Controller
 {
@@ -169,7 +170,7 @@ class PortalPaymentController extends Controller
 
             return redirect()->route('portal.payments.receipt', $payment)
                 ->with('success', 'Payment of GHS '.number_format($payment->amount, 2).' processed successfully via Paystack!');
-        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+        } catch (HttpException $e) {
             throw $e;
         } catch (Exception $e) {
             Log::error('Paystack callback error: '.$e->getMessage());

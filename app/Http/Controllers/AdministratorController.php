@@ -11,9 +11,12 @@ class AdministratorController extends Controller
     public function index(Request $request)
     {
         $administrators = User::query()
+            ->where('role', 'admin')
             ->when($request->search, function ($q, $search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $q->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->paginate(20)
