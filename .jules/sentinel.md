@@ -7,3 +7,8 @@
 **Vulnerability:** Public user portal registration matched and linked existing customer records using `Customer::where('email', $email)->orWhere('phone', $phone)`. An attacker could supply a target customer's phone number along with a new email address to gain access to that customer's account and financial details.
 **Learning:** Automatically linking existing profiles during unauthenticated public self-registration via easily spoofable/public fields (like phone numbers) allows account takeover (ATO) and unauthorized access (IDOR).
 **Prevention:** Match customer records strictly by unique, verified identifier (such as email) and never automatically link accounts based solely on unverified or non-unique profile attributes.
+
+## 2026-11-03 - User Role Isolation in Administrative Management Queries
+**Vulnerability:** `AdministratorController::index` queried `User::query()` without scoping by `role = 'admin'`. This exposed customer accounts on the system administrator management page, misclassifying customer users as system administrators.
+**Learning:** Admin management controllers must explicitly scope database queries by administrative role (`role = 'admin'`) and group search conditions (`where(function ($query) { ... })`) to prevent leaking customer accounts and breaking boolean logic on keyword searches.
+**Prevention:** Always restrict role-specific administrative queries using `where('role', 'admin')` and wrap optional search parameters in nested closure clauses.

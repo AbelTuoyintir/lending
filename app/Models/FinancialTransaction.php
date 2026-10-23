@@ -49,18 +49,15 @@ class FinancialTransaction extends Model
         return $this->belongsTo(Loan::class);
     }
 
-
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-
     //  public function account(): BelongsTo
     // {
     //     return $this->belongsTo(Account::class);
     // }
-
 
     public function createdBy()
     {
