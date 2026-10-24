@@ -23,7 +23,13 @@ class PortalProfileController extends Controller
         $customer = $user->customer;
 
         $validatedUser = $request->validate([
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,'.$user->id,
+                'unique:customers,email,'.($customer?->id ?? 'NULL'),
+            ],
         ]);
 
         $validatedCustomer = $request->validate([
