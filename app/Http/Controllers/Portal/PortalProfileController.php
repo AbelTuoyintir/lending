@@ -22,8 +22,15 @@ class PortalProfileController extends Controller
         $user = Auth::user();
         $customer = $user->customer;
 
+        // Security: Validate email against both users and customers tables to prevent profile email collisions and account takeover
         $validatedUser = $request->validate([
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,'.$user->id,
+                'unique:customers,email,'.($customer?->id ?? 'NULL'),
+            ],
         ]);
 
         $validatedCustomer = $request->validate([
