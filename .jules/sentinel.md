@@ -12,3 +12,8 @@
 **Vulnerability:** `AdministratorController::index` queried `User::query()` without scoping by `role = 'admin'`. This exposed customer accounts on the system administrator management page, misclassifying customer users as system administrators.
 **Learning:** Admin management controllers must explicitly scope database queries by administrative role (`role = 'admin'`) and group search conditions (`where(function ($query) { ... })`) to prevent leaking customer accounts and breaking boolean logic on keyword searches.
 **Prevention:** Always restrict role-specific administrative queries using `where('role', 'admin')` and wrap optional search parameters in nested closure clauses.
+
+## 2026-11-12 - Nested Condition Grouping for Search Controller OR Queries
+**Vulnerability:** `SearchController` performed multiple top-level `orWhere` database conditions across Customer, Loan, and Payment models without wrapping them in a nested closure.
+**Learning:** Unwrapped `orWhere` conditions break SQL boolean operator precedence (`AND` vs `OR`), causing additional filter constraints (or soft delete / tenant / status scopes) to be ignored for subsequent `OR` branches.
+**Prevention:** Always wrap multiple `orWhere` search conditions inside a `where(function ($q) use ($query) { ... })` closure to isolate keyword search logic from scope constraints.
