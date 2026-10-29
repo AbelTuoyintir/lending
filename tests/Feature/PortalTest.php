@@ -520,4 +520,21 @@ class PortalTest extends TestCase
         $this->assertNotNull($attackerUser);
         $this->assertNotEquals($existingCustomer->id, $attackerUser->customer_id);
     }
+
+    public function test_customer_cannot_update_profile_email_to_existing_customer_email(): void
+    {
+        $existingCustomer = $this->createCustomer(['email' => 'other_customer@example.com']);
+
+        $customer = $this->createCustomer(['email' => 'my_email@example.com']);
+        $user = User::factory()->create(['email' => 'my_email@example.com', 'customer_id' => $customer->id]);
+
+        $response = $this->actingAs($user)->put(route('portal.profile.update'), [
+            'first_name' => $customer->first_name,
+            'last_name' => $customer->last_name,
+            'email' => $existingCustomer->email,
+            'phone' => $customer->phone,
+        ]);
+
+        $response->assertSessionHasErrors('email');
+    }
 }
