@@ -18,6 +18,7 @@ class SearchController extends Controller
         $payments = collect();
 
         if (! empty($query)) {
+            // Security: Wrap search OR conditions in nested query closures to ensure correct SQL operator precedence
             $customers = Customer::query()
                 ->where(function ($q) use ($query) {
                     $q->where('first_name', 'like', "%{$query}%")
