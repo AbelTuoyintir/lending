@@ -132,4 +132,29 @@ class CustomerTest extends TestCase
         $this->assertEquals('alice.new@example.com', $user1->fresh()->email);
         $this->assertEquals('Alice Updated', $user1->fresh()->name);
     }
+
+    public function test_cannot_create_customer_with_existing_customer_email(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Customer::create([
+            'customer_number' => 'CUS-20000001',
+            'first_name' => 'Existing',
+            'last_name' => 'Customer',
+            'phone' => '0240000099',
+            'email' => 'existing.customer@example.com',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('customers.store'), [
+            'first_name' => 'Duplicate',
+            'last_name' => 'Email',
+            'phone' => '0240000088',
+            'email' => 'existing.customer@example.com',
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertEquals(1, Customer::where('email', 'existing.customer@example.com')->count());
+    }
 }
