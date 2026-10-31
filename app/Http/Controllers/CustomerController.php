@@ -74,7 +74,8 @@ class CustomerController extends Controller
             'last_name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:30'],
             'alternate_phone' => ['nullable', 'string', 'max:30'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            // Security: Enforce uniqueness against both users and customers to prevent profile collisions and orphaned records
+            'email' => ['required', 'email', 'max:255', 'unique:users,email', 'unique:customers,email'],
             'date_of_birth' => ['nullable', 'date'],
             'gender' => ['nullable', 'string', 'max:20'],
             'id_type' => ['nullable', 'string', 'max:50'],

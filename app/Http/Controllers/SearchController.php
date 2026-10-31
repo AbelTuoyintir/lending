@@ -33,8 +33,8 @@ class SearchController extends Controller
                 ->with('customer')
                 ->where(function ($q) use ($query) {
                     $q->where('loan_number', 'like', "%{$query}%")
-                        ->orWhereHas('customer', function ($subQuery) use ($query) {
-                            $subQuery->where('first_name', 'like', "%{$query}%")
+                        ->orWhereHas('customer', function ($sub) use ($query) {
+                            $sub->where('first_name', 'like', "%{$query}%")
                                 ->orWhere('last_name', 'like', "%{$query}%");
                         });
                 })
