@@ -121,6 +121,13 @@ class PortalPaymentController extends Controller
             return redirect()->route('portal.payments.index')->with('error', 'No transaction reference returned from Paystack.');
         }
 
+        // Security: Idempotency check for existing payment to prevent duplicate entries and replay processing
+        $existingPayment = Payment::where('reference', $reference)->first();
+        if ($existingPayment) {
+            return redirect()->route('portal.payments.receipt', $existingPayment)
+                ->with('info', 'Payment has already been recorded.');
+        }
+
         $sessionKey = 'paystack_pending_'.$reference;
         $pendingData = session($sessionKey);
 
@@ -131,8 +138,9 @@ class PortalPaymentController extends Controller
                 return redirect()->route('portal.payments.index')->with('error', 'Payment verification failed: '.($verification['message'] ?? 'Transaction incomplete'));
             }
 
-            $loanId = $pendingData['loan_id'] ?? $request->query('loan_id') ?? ($verification['metadata']['loan_id'] ?? null);
-            $amount = $pendingData['amount'] ?? $request->query('amount') ?? ($verification['amount'] ?? null);
+            // Security: Prioritize verified gateway data and server session over untrusted HTTP query parameters
+            $loanId = $pendingData['loan_id'] ?? ($verification['metadata']['loan_id'] ?? null) ?? $request->query('loan_id');
+            $amount = $verification['amount'] ?? $pendingData['amount'] ?? $request->query('amount');
 
             if (! $loanId || ! $amount) {
                 return redirect()->route('portal.payments.index')->with('error', 'Invalid transaction payload metadata.');
