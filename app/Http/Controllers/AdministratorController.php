@@ -34,7 +34,8 @@ class AdministratorController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            // Security: Enforce uniqueness against both users and customers to prevent account collision with customer profiles
+            'email' => ['required', 'email', 'max:255', 'unique:users,email', 'unique:customers,email'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 

@@ -42,4 +42,33 @@ class AdministratorTest extends TestCase
         $response->assertSee('admin@fincore.com');
         $response->assertDontSee('customer@fincore.com');
     }
+
+    public function test_cannot_create_administrator_with_existing_customer_email(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        Customer::create([
+            'customer_number' => 'CUS-87654321',
+            'first_name' => 'Existing',
+            'last_name' => 'Borrower',
+            'phone' => '0249998877',
+            'email' => 'borrower@example.com',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('administrators.store'), [
+            'name' => 'New Admin',
+            'email' => 'borrower@example.com',
+            'password' => 'secret1234',
+            'password_confirmation' => 'secret1234',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertDatabaseMissing('users', [
+            'name' => 'New Admin',
+            'email' => 'borrower@example.com',
+        ]);
+    }
 }
