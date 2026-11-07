@@ -110,9 +110,17 @@ class AuthController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
+
+        // Security: Enforce email uniqueness against both users and customers tables to prevent administrator email collision with customer profiles
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,'.$user->id,
+                'unique:customers,email',
+            ],
         ]);
 
         $user->update($validated);

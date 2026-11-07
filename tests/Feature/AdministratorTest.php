@@ -71,4 +71,49 @@ class AdministratorTest extends TestCase
             'email' => 'borrower@example.com',
         ]);
     }
+
+    public function test_administrator_cannot_update_profile_email_to_existing_customer_email(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'name' => 'Current Admin',
+            'email' => 'current.admin@example.com',
+        ]);
+
+        Customer::create([
+            'customer_number' => 'CUS-99887766',
+            'first_name' => 'Target',
+            'last_name' => 'Customer',
+            'phone' => '0245556677',
+            'email' => 'target.customer@example.com',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('profile.update'), [
+            'name' => 'Current Admin',
+            'email' => 'target.customer@example.com',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertEquals('current.admin@example.com', $admin->fresh()->email);
+    }
+
+    public function test_administrator_can_update_profile_with_valid_email(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'name' => 'Current Admin',
+            'email' => 'current.admin@example.com',
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('profile.update'), [
+            'name' => 'Updated Admin',
+            'email' => 'updated.admin@example.com',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $this->assertEquals('updated.admin@example.com', $admin->fresh()->email);
+        $this->assertEquals('Updated Admin', $admin->fresh()->name);
+    }
 }
