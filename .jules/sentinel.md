@@ -17,3 +17,8 @@
 **Vulnerability:** `SearchController` performed multiple top-level `orWhere` database conditions across Customer, Loan, and Payment models without wrapping them in a nested closure.
 **Learning:** Unwrapped `orWhere` conditions break SQL boolean operator precedence (`AND` vs `OR`), causing additional filter constraints (or soft delete / tenant / status scopes) to be ignored for subsequent `OR` branches.
 **Prevention:** Always wrap multiple `orWhere` search conditions inside a `where(function ($q) use ($query) { ... })` closure to isolate keyword search logic from scope constraints.
+
+## 2026-11-19 - Dual-Table Email Uniqueness on Admin Profile Update
+**Vulnerability:** `AuthController::updateProfile` only enforced email uniqueness on `users` (`unique:users,email,...`), allowing administrators to update their email address to collide with existing customer records in `customers`.
+**Learning:** In applications where user identities map across dual entity tables (`users` and `customers`), validating email uniqueness against only one table leaves an account collision and identity spoofing vector open. An admin or customer update could overwrite or collide with borrower email identities used for public self-registration matching and notifications.
+**Prevention:** Always validate email uniqueness across both `users` and `customers` tables (`unique:users,email,...` and `unique:customers,email`) whenever emails are updated or created.
