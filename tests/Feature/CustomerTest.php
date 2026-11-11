@@ -157,4 +157,34 @@ class CustomerTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertEquals(1, Customer::where('email', 'existing.customer@example.com')->count());
     }
+
+    public function test_customer_csv_export_sanitizes_formula_injection_characters(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Customer::create([
+            'customer_number' => 'CUS-MALICIOUS1',
+            'first_name' => '=cmd|\' /C calc\'!A0',
+            'last_name' => '@SUM(1+1)',
+            'phone' => '+233240000000',
+            'email' => '-malicious@example.com',
+            'occupation' => "\tSoftware Engineer",
+            'employer' => "\rEvil Corp",
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('customers.index', ['export' => 'csv']));
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', (string) $response->headers->get('Content-Type'));
+
+        $content = $response->streamedContent();
+
+        $this->assertStringContainsString("'=cmd|' /C calc'!A0", $content);
+        $this->assertStringContainsString("'@SUM(1+1)", $content);
+        $this->assertStringContainsString("'+233240000000", $content);
+        $this->assertStringContainsString("'-malicious@example.com", $content);
+        $this->assertStringContainsString("'\tSoftware Engineer", $content);
+        $this->assertStringContainsString("'\rEvil Corp", $content);
+    }
 }

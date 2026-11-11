@@ -256,7 +256,8 @@ class CustomerController extends Controller
             ]);
 
             foreach ($customers as $c) {
-                fputcsv($file, [
+                // Security: Sanitize exported cell values to mitigate CSV / formula injection (CWE-1236)
+                fputcsv($file, array_map([$this, 'sanitizeCsvCell'], [
                     $c->customer_number,
                     $c->first_name,
                     $c->last_name,
@@ -268,12 +269,24 @@ class CustomerController extends Controller
                     $c->loans_count,
                     $c->status,
                     $c->created_at->format('Y-m-d H:i:s'),
-                ]);
+                ]));
             }
 
             fclose($file);
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Sanitize a cell value to prevent CSV / formula injection (CWE-1236).
+     */
+    private function sanitizeCsvCell(mixed $value): mixed
+    {
+        if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 }
