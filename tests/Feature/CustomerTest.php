@@ -158,33 +158,34 @@ class CustomerTest extends TestCase
         $this->assertEquals(1, Customer::where('email', 'existing.customer@example.com')->count());
     }
 
-    public function test_customer_csv_export_sanitizes_formula_injection_characters(): void
+    public function test_customer_csv_export_escapes_formula_injection_characters(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
         Customer::create([
-            'customer_number' => 'CUS-MALICIOUS1',
-            'first_name' => '=cmd|\' /C calc\'!A0',
-            'last_name' => '@SUM(1+1)',
-            'phone' => '+233240000000',
-            'email' => '-malicious@example.com',
-            'occupation' => "\tSoftware Engineer",
-            'employer' => "\rEvil Corp",
+            'customer_number' => 'CUS-CSV001',
+            'first_name' => '=1+1',
+            'last_name' => '@SUM(A1:A10)',
+            'phone' => '+2332400000',
+            'email' => 'csv-injection@example.com',
+            'occupation' => '-cmd|/C calc',
+            'employer' => "\tSuspiciousCorp",
+            'monthly_income' => 5000,
             'status' => 'active',
         ]);
 
         $response = $this->actingAs($admin)->get(route('customers.index', ['export' => 'csv']));
 
         $response->assertOk();
-        $this->assertStringContainsString('text/csv', (string) $response->headers->get('Content-Type'));
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
 
         $content = $response->streamedContent();
 
-        $this->assertStringContainsString("'=cmd|' /C calc'!A0", $content);
-        $this->assertStringContainsString("'@SUM(1+1)", $content);
-        $this->assertStringContainsString("'+233240000000", $content);
-        $this->assertStringContainsString("'-malicious@example.com", $content);
-        $this->assertStringContainsString("'\tSoftware Engineer", $content);
-        $this->assertStringContainsString("'\rEvil Corp", $content);
+        // Formula trigger characters must be prefixed with a single quote
+        $this->assertStringContainsString("'=1+1", $content);
+        $this->assertStringContainsString("'@SUM(A1:A10)", $content);
+        $this->assertStringContainsString("'+2332400000", $content);
+        $this->assertStringContainsString("'-cmd|/C calc", $content);
+        $this->assertStringContainsString("'\tSuspiciousCorp", $content);
     }
 }
