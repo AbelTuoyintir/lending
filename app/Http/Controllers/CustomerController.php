@@ -285,4 +285,16 @@ class CustomerController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+     * Sanitize a cell value to prevent CSV / formula injection (CWE-1236).
+     */
+    private function sanitizeCsvCell(mixed $value): mixed
+    {
+        if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'".$value;
+        }
+
+        return $value;
+    }
 }
