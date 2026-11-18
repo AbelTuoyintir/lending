@@ -256,7 +256,8 @@ class CustomerController extends Controller
             ]);
 
             foreach ($customers as $c) {
-                fputcsv($file, [
+                // Security: Prevent CSV / Formula Injection (CWE-1236) by escaping formula trigger characters
+                $row = [
                     $c->customer_number,
                     $c->first_name,
                     $c->last_name,
@@ -268,7 +269,15 @@ class CustomerController extends Controller
                     $c->loans_count,
                     $c->status,
                     $c->created_at->format('Y-m-d H:i:s'),
-                ]);
+                ];
+
+                fputcsv($file, array_map(function ($value) {
+                    if (is_string($value) && in_array($value[0] ?? '', ['=', '+', '-', '@', "\t", "\r"], true)) {
+                        return "'".$value;
+                    }
+
+                    return $value;
+                }, $row));
             }
 
             fclose($file);

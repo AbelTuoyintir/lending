@@ -22,3 +22,8 @@
 **Vulnerability:** `AuthController::updateProfile` only enforced email uniqueness on `users` (`unique:users,email,...`), allowing administrators to update their email address to collide with existing customer records in `customers`.
 **Learning:** In applications where user identities map across dual entity tables (`users` and `customers`), validating email uniqueness against only one table leaves an account collision and identity spoofing vector open. An admin or customer update could overwrite or collide with borrower email identities used for public self-registration matching and notifications.
 **Prevention:** Always validate email uniqueness across both `users` and `customers` tables (`unique:users,email,...` and `unique:customers,email`) whenever emails are updated or created.
+
+## 2026-11-20 - CSV / Formula Injection (CWE-1236) in Customer Data Exports
+**Vulnerability:** `CustomerController::exportCsv` directly passed user-controlled customer data (e.g., name, employer, occupation, phone) to `fputcsv` without sanitizing leading formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`).
+**Learning:** Exporting raw user inputs directly into CSV spreadsheets allows attackers to inject malicious spreadsheet formulas (Formula Injection / DDE commands) that execute when administrative personnel open the export file in Microsoft Excel, LibreOffice Calc, or Google Sheets.
+**Prevention:** Sanitize every exported CSV cell by prepending a single quote (`'`) whenever a string field starts with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`).
